@@ -3,6 +3,7 @@
 **A high-performance, private expense intelligence dashboard.**
 
 Total Vault is a luxury-themed financial tracking application built with Vue.js and Tailwind CSS. It allows users to manage their burn rate and financial health using a "Bring Your Own Database" (BYOD) model via the Stein API and Google Sheets.
+https://scorpiozo.github.io/My-Expense-Tracker/
 
 ![Status](https://img.shields.io/badge/Status-Live-2df5b1?style=for-the-badge)
 ![Security](https://img.shields.io/badge/Security-Client--Side-d4a373?style=for-the-badge)
