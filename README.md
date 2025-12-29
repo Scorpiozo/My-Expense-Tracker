@@ -17,7 +17,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 
 ### 1. Prepare your Database
 1.  Create a **Google Sheet** with the following headers in the first row:
-    `Date`, `Description`, `Amount`, `Category`
+    `Date`, `Description`, `Category`, `Amount`
 2.  Go to [SteinHQ.com](https://steinhq.com/) and create a new API using your Google Sheet URL. Make sure 'Anyone with link can view'.
 3.  Copy your **Stein API Endpoint URL** and add '/sheetname' at the end of this url obtained. That is your final stein link.
 
