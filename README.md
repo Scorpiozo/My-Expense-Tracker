@@ -19,7 +19,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 1.  Create a **Google Sheet** with the following headers in the first row:
     `Date`, `Description`, `Amount`, `Category`
 2.  Go to [SteinHQ.com](https://steinhq.com/) and create a new API using your Google Sheet URL.
-3.  Copy your **Stein API Endpoint URL** and add '/sheetname'.
+3.  Copy your **Stein API Endpoint URL** and add '/sheetname' at the end of this url obtained. That is your final stein link.
 
 ### 2. Connect the App
 1.  Open the [Live Demo of the site](https://scorpiozo.github.io/My-Expense-Tracker/).
