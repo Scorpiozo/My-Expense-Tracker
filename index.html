@@ -9,104 +9,126 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f0b09; color: #f2e9e4; min-height: 100vh; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f0b09; color: #f2e9e4; min-height: 100vh; overflow-x: hidden; }
+        
+        /* UI Components */
         .luxury-card { background: rgba(44, 31, 24, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(45, 245, 177, 0.15); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); border-radius: 2rem; }
-        .header-card { background: linear-gradient(165deg, #d4a373 0%, #a98467 100%); color: #17110e; }
+        .header-card { background: linear-gradient(165deg, #d4a373 0%, #a98467 100%); color: #17110e; position: relative; overflow: hidden; }
+        .header-warning { background: #3d1c1c !important; color: #ef4444 !important; border: 2px solid #ef4444; }
+        
+        /* Accents */
         .mint-glow { color: #2df5b1; text-shadow: 0 0 10px rgba(45, 245, 177, 0.3); }
         .mint-bg { background: #2df5b1; color: #17110e; }
         .btn-press:active { transform: scale(0.96); transition: 0.1s; }
+        
+        /* Inputs */
         input, select { background: rgba(0, 0, 0, 0.4) !important; color: #f2e9e4 !important; border: 1px solid rgba(212, 163, 115, 0.1) !important; border-radius: 1.25rem; }
-        .glass-nav { background: rgba(15, 11, 9, 0.9); backdrop-filter: blur(20px); border-top: 1px solid rgba(212, 163, 115, 0.1); }
-        .progress-bar-bg { background: rgba(0,0,0,0.1); height: 6px; border-radius: 10px; overflow: hidden; }
+        .glass-nav { background: rgba(15, 11, 9, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(212, 163, 115, 0.1); }
+        
+        /* Progress & Chips */
         .progress-fill { background: #17110e; height: 100%; transition: width 0.8s; }
-        .filter-pill { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 6px 12px; border-radius: 12px; transition: all 0.3s; border: 1px solid rgba(45, 245, 177, 0.1); }
+        .filter-chip { padding: 6px 16px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
         .filter-active { background: #2df5b1; color: #17110e; border-color: #2df5b1; }
-        .stat-badge { background: rgba(45, 245, 177, 0.1); color: #2df5b1; padding: 2px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; }
-        .heat-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; }
-        .heat-fill { height: 100%; transition: width 1s; }
+
+        /* Animations */
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Navigation FABs */
+        .fab-container { position: fixed; bottom: 100px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 100; }
+        .fab-btn { width: 56px; height: 56px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(45, 245, 177, 0.3); cursor: pointer; border: none; }
+        .fab-settings { background: #2df5b1; color: #17110e; }
+        .fab-notify { background: #d4a373; color: #17110e; animation: float 3s ease-in-out infinite; }
+
         [v-cloak] { display: none; }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-32">
 
     <div id="app" v-cloak>
         
-        <div v-if="!vaultKey" class="fixed inset-0 z-[100] bg-[#0f0b09] flex items-center justify-center px-6 text-center">
-            <div class="luxury-card p-8 w-full max-w-sm">
-                <div class="w-16 h-16 bg-[#2df5b1] rounded-2xl mx-auto mb-6 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#17110e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+        <div v-if="!vaultKey" class="fixed inset-0 z-[200] bg-[#0f0b09] flex items-center justify-center px-8">
+            <div class="w-full max-w-sm" :class="{ 'shake': loginError }">
+                <div class="flex justify-center mb-8">
+                    <div class="px-4 py-1.5 rounded-full border border-[#2df5b1]/20 bg-[#2df5b1]/5 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#2df5b1] animate-pulse"></span>
+                        <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#2df5b1]">Secure Terminal v2.0</span>
+                    </div>
                 </div>
-                <h2 class="text-2xl font-black mb-2">Initialize Vault</h2>
-                <p class="text-[10px] opacity-50 mb-8 uppercase tracking-widest font-bold">Secure Multi-User Database</p>
-                <input v-model="tempKey" type="text" placeholder="Paste Stein API URL..." class="w-full p-4 mb-4 text-xs outline-none">
-                <button @click="connectVault" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">Connect Database</button>
+
+                <div class="luxury-card p-10 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#2df5b1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div class="relative z-10 w-24 h-24 mx-auto mb-10 flex items-center justify-center">
+                        <div class="absolute inset-0 border-2 border-dashed border-[#2df5b1]/20 rounded-[2.5rem] animate-[spin_10s_linear_infinite]"></div>
+                        <div class="absolute inset-2 border border-[#2df5b1]/10 rounded-[2rem]"></div>
+                        <div class="w-16 h-16 bg-[#2df5b1] rounded-[1.8rem] flex items-center justify-center shadow-[0_0_40px_rgba(45,245,177,0.3)]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#17110e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-black mb-2 tracking-tighter text-center uppercase">Auth Required</h2>
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-30 text-center mb-10">Input Endpoint Credentials</p>
+                    <div class="space-y-4 relative z-10">
+                        <input v-model="tempKey" type="password" placeholder="HTTPS://STEINHQ.COM/..." class="w-full p-5 text-center text-[10px] font-black tracking-widest outline-none bg-black/60 border border-white/5 rounded-2xl focus:border-[#2df5b1]/40 transition-all duration-300 placeholder:opacity-20">
+                        <button @click="connectVault" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press shadow-[0_10px_20px_rgba(45,245,177,0.2)]">Initialize Link</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div v-else class="max-w-md mx-auto px-6 pt-10">
             
-            <div v-if="activeTab === 'vault'">
-                <div class="flex justify-between items-center mb-4 px-2">
-                    <p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{{ greeting }}</p>
-                    <button @click="logout" class="text-[8px] font-black opacity-30 uppercase border border-white/10 px-2 py-1 rounded">Logout</button>
+            <div class="flex justify-between items-start mb-6 px-2">
+                <div><p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{{ greeting }}</p></div>
+                <button @click="logout" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-red-500 btn-press">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                </button>
+            </div>
+
+            <div class="fab-container">
+                <button v-if="activeTab === 'reminders' && notificationStatus !== 'granted'" @click="requestNotify" class="fab-btn fab-notify btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
+                <button @click="showSettings = true" class="fab-btn fab-settings btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572-1.724 1.724 0 000-3.35 1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg></button>
+            </div>
+
+            <div v-if="showSettings" class="fixed inset-0 z-[110] bg-[#0f0b09]/95 backdrop-blur-xl flex items-center justify-center px-6">
+                <div class="luxury-card p-8 w-full max-w-sm border-2 border-[#d4a373]">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-black uppercase tracking-tighter text-[#d4a373]">Calibration</h2>
+                        <button @click="showSettings = false" class="text-2xl opacity-40">&times;</button>
+                    </div>
+                    <div class="space-y-4">
+                        <input v-model.number="monthlyLimit" type="number" class="w-full p-4 outline-none" placeholder="Monthly Limit">
+                        <input v-model.number="savingsGoal" type="number" class="w-full p-4 outline-none" placeholder="Savings Goal">
+                        <button @click="saveBudget" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">Apply</button>
+                    </div>
                 </div>
+            </div>
 
-                <header class="header-card p-8 rounded-[3rem] mb-6 shadow-2xl relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-[10px] font-black uppercase tracking-widest opacity-60">Vault Balance</p>
-                        <div class="flex gap-4">
-                            <button @click="isEditingBudget = !isEditingBudget" class="opacity-60 hover:opacity-100 transition-opacity">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
-                            </button>
-                            <button @click="loadData" :class="{'animate-spin': loading}" class="opacity-60">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div v-if="!isEditingBudget">
-                        <h1 class="text-5xl font-black tracking-tighter mb-4">$ {{ totalBalanceFormatted }}</h1>
-                        <div class="progress-bar-bg mb-6"><div class="progress-fill" :style="{ width: percentUsed + '%' }"></div></div>
-                    </div>
-                    <div v-else class="mb-6">
-                        <label class="text-[9px] font-bold uppercase opacity-60">Set Monthly Limit</label>
-                        <input v-model.number="monthlyLimit" type="number" class="w-full bg-black/20 border-none text-3xl font-black mt-1 p-2 rounded-xl focus:ring-0">
-                        <button @click="saveBudget" class="mt-2 text-[10px] font-black uppercase bg-[#1a5e4b] text-white px-3 py-1 rounded-lg">Save Goal</button>
-                    </div>
-
+            <div v-if="activeTab === 'vault'">
+                <header :class="headerClass" class="header-card p-8 rounded-[3rem] mb-6 shadow-2xl">
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Safe Daily Spend</p>
+                    <h1 class="text-6xl font-black tracking-tighter mb-4">${{ dailyAllowance > 0 ? dailyAllowance : '0.00' }}</h1>
+                    <div class="h-1.5 bg-black/10 rounded-full mb-6 overflow-hidden"><div class="progress-fill" :style="{ width: percentUsed + '%' }"></div></div>
                     <div class="grid grid-cols-2 gap-4 border-t border-black/10 pt-4">
-                        <div><p class="text-[8px] font-black uppercase opacity-50">Top Merchant</p><p class="text-sm font-bold truncate">{{ topMerchant }}</p></div>
-                        <div class="text-right"><p class="text-[8px] font-black uppercase opacity-50">Vault Status</p><p class="text-sm font-bold">{{ vaultHealth }}</p></div>
+                        <div><p class="text-[8px] font-black uppercase opacity-50">Total Spent</p><p class="text-sm font-bold">${{ totalBalanceRaw.toFixed(0) }}</p></div>
+                        <div class="text-right"><p class="text-[8px] font-black uppercase opacity-50">Days Left</p><p class="text-sm font-bold">{{ daysRemaining }} Days</p></div>
                     </div>
                 </header>
 
-                <div class="luxury-card p-4 mb-6 flex justify-between items-center border-dashed border-white/10">
-                    <div><p class="text-[8px] font-black uppercase opacity-40">Daily Allowance</p><p class="text-sm font-bold text-[#2df5b1]">${{ dailyAllowance }}</p></div>
-                    <div class="h-8 w-[1px] bg-white/10"></div>
-                    <div class="text-right"><p class="text-[8px] font-black uppercase opacity-40">Burn Rate</p><p class="text-sm font-bold" :class="percentUsed > 80 ? 'text-red-400' : 'text-white'">{{ percentUsed }}%</p></div>
-                </div>
-
-                <div class="luxury-card p-2 mb-4 flex items-center px-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-30 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    <input v-model="searchQuery" placeholder="Search entries..." class="w-full !bg-transparent border-none text-xs py-2 px-3 focus:ring-0">
-                </div>
-
-                <div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar mb-2">
-                    <button v-for="c in ['All', 'Food', 'Bills', 'Fun', 'Other']" @click="selectedFilter = c" :class="selectedFilter === c ? 'filter-active' : 'text-white/40 bg-white/5'" class="filter-pill whitespace-nowrap">{{ c }}</button>
-                </div>
-
                 <div class="luxury-card p-6 mb-8">
                     <form @submit.prevent="addExpense" class="space-y-4">
-                        <input v-model="form.desc" placeholder="Merchant name" required class="w-full p-4 text-sm outline-none">
+                        <input v-model="form.desc" placeholder="Entity Name" required class="w-full p-4 text-sm outline-none">
                         <div class="grid grid-cols-2 gap-4">
                             <input v-model.number="form.amt" type="number" step="0.01" placeholder="0.00" required class="p-4 text-sm font-bold outline-none">
-                            <select v-model="form.cat" class="p-4 text-[10px] font-black uppercase outline-none">
-                                <option>Food</option><option>Bills</option><option>Fun</option><option>Other</option>
-                            </select>
+                            <select v-model="form.cat" class="p-4 text-[10px] font-black uppercase"><option>Food</option><option>Bills</option><option>Fun</option><option>Other</option></select>
                         </div>
-                        <button :disabled="loading" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">
-                            {{ loading ? 'Syncing...' : 'Commit to Vault' }}
-                        </button>
+                        <button :disabled="loading" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">{{ loading ? 'Syncing...' : 'Commit to Vault' }}</button>
                     </form>
                 </div>
 
@@ -116,57 +138,60 @@
                             <div class="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center text-lg">{{ getIcon(item.Category) }}</div>
                             <div><p class="font-bold text-sm">{{ item.Description }}</p><p class="text-[9px] text-[#d4a373] font-black uppercase opacity-50">{{ item.Date }}</p></div>
                         </div>
-                        <p class="font-black mint-glow">-${{ formatNum(item.Amount) }}</p>
+                        <p class="font-black mint-glow">-${{ item.Amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'reminders'">
+                <div class="mb-8 px-2"><p class="text-[10px] font-black uppercase opacity-40">Monthly Cycle</p><h2 class="text-4xl font-black tracking-tighter">Reminders</h2></div>
+                <div class="luxury-card p-6 mb-6">
+                    <div class="flex gap-2">
+                        <input v-model="newBill.name" placeholder="Bill Name" class="flex-1 p-3 text-xs">
+                        <input v-model.number="newBill.day" type="number" placeholder="Day" class="w-16 p-3 text-xs">
+                        <button @click="addBill" class="mint-bg px-4 rounded-xl font-black text-xs">+</button>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div v-for="(bill, index) in bills" :key="index" class="luxury-card p-5 flex justify-between items-center border-l-4 border-[#d4a373]">
+                        <div><p class="font-bold text-sm">{{ bill.name }}</p><p class="text-[9px] font-black opacity-40 uppercase">Day {{ bill.day }}</p></div>
+                        <button @click="removeBill(index)" class="text-red-500 opacity-20 text-xl">×</button>
                     </div>
                 </div>
             </div>
 
             <div v-if="activeTab === 'reports'">
-                <div class="flex justify-between items-end mb-8 px-2">
-                    <div><p class="text-[10px] font-black uppercase tracking-widest opacity-40">Financial Analytics</p><h2 class="text-4xl font-black tracking-tighter">Intelligence</h2></div>
-                    <div class="text-right"><p class="text-[10px] font-black uppercase opacity-40">Health Score</p><p class="text-2xl font-black mint-glow">{{ healthScore }}<span class="text-xs opacity-40">/100</span></p></div>
+                <div class="mb-6 px-2"><p class="text-[10px] font-black uppercase opacity-40">System Analytics</p><h2 class="text-4xl font-black tracking-tighter">Intelligence</h2></div>
+
+                <div class="luxury-card p-6 mb-6 border-l-4 border-[#2df5b1]">
+                    <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-2">Smart Analysis</p>
+                    <p class="text-sm font-bold leading-relaxed">
+                        Consumption is at <span class="mint-glow">{{ percentUsed }}%</span>. 
+                        Burn entity is <span class="text-[#d4a373] uppercase">{{ topCategory }}</span> 
+                        totaling <span class="text-[#d4a373]">${{ topCategoryTotal }}</span>.
+                    </p>
                 </div>
 
-                <div class="luxury-card p-8 mb-6 relative overflow-hidden">
-                    <div class="flex justify-between items-center mb-6"><p class="text-[10px] font-black uppercase opacity-60">Category Distribution</p><span class="stat-badge">{{ expenses.length }} Data Points</span></div>
-                    <canvas id="reportChart"></canvas>
-                </div>
-                
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="luxury-card p-5"><p class="text-[8px] font-black uppercase text-[#d4a373] mb-2 opacity-60">Avg. Purchase</p><p class="text-xl font-bold">${{ avgTicket }}</p></div>
-                    <div class="luxury-card p-5"><p class="text-[8px] font-black uppercase text-[#d4a373] mb-2 opacity-60">Daily Burn</p><p class="text-xl font-bold">${{ dailyAvg.toFixed(2) }}</p></div>
+                    <div class="luxury-card p-5"><p class="text-[8px] font-black uppercase opacity-40 mb-1">Filtered</p><p class="text-xl font-black mint-glow">${{ filteredIntelTotal }}</p></div>
+                    <div class="luxury-card p-5"><p class="text-[8px] font-black uppercase opacity-40 mb-1">Records</p><p class="text-xl font-black">{{ processedIntel.length }}</p></div>
                 </div>
 
                 <div class="luxury-card p-6 mb-6">
-                    <p class="text-[10px] font-black uppercase text-[#d4a373] mb-6 opacity-60">Category Heatmap</p>
-                    <div class="space-y-6">
-                        <div v-for="(total, cat) in categoryTotals" :key="cat">
-                            <div class="flex justify-between items-end mb-2"><span class="text-xs font-bold">{{ cat }}</span><span class="text-[10px] font-black opacity-60">${{ total.toFixed(0) }}</span></div>
-                            <div class="heat-bar"><div class="heat-fill" :style="{ width: (totalBalanceRaw > 0 ? (total/totalBalanceRaw * 100) : 0) + '%', background: getCatColor(cat) }"></div></div>
-                        </div>
+                    <input v-model="intelSearch" type="text" placeholder="SEARCH..." class="w-full p-4 text-[10px] font-black uppercase outline-none bg-black/40 border border-white/5 rounded-2xl mb-4">
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                        <button v-for="cat in ['All', 'Food', 'Bills', 'Fun', 'Other']" @click="activeFilter = cat" :class="['filter-chip', activeFilter === cat ? 'filter-active' : 'text-white/30']">{{ cat }}</button>
                     </div>
                 </div>
 
-                <div class="luxury-card p-6 mb-8">
-                    <p class="text-[10px] font-black uppercase text-[#d4a373] mb-4 opacity-60">Merchant Frequency</p>
-                    <div class="divide-y divide-white/5">
-                        <div v-for="(count, merchant) in merchantBreakdown" class="flex justify-between items-center py-3">
-                            <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-[#2df5b1]"></div><span class="text-xs font-bold">{{ merchant }}</span></div>
-                            <span class="text-[10px] font-black bg-white/5 px-2 py-1 rounded-md">{{ count }} visits</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="luxury-card p-8 mb-6"><canvas id="reportChart"></canvas></div>
+                <div class="luxury-card p-8 mb-12"><div class="h-40"><canvas id="barChart"></canvas></div></div>
             </div>
 
-            <nav class="fixed bottom-0 left-0 right-0 glass-nav px-12 py-6 flex justify-around items-center z-50">
-                <button @click="activeTab = 'vault'" :class="activeTab === 'vault' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1 transition-all btn-press">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                    <span class="text-[8px] font-black uppercase">Vault</span>
-                </button>
-                <button @click="openReports" :class="activeTab === 'reports' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1 transition-all btn-press">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                    <span class="text-[8px] font-black uppercase">Reports</span>
-                </button>
+            <nav class="fixed bottom-0 left-0 right-0 glass-nav px-8 py-6 flex justify-around items-center z-50">
+                <button @click="activeTab = 'vault'" :class="activeTab === 'vault' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg><span class="text-[7px] font-black uppercase">Vault</span></button>
+                <button @click="activeTab = 'reminders'" :class="activeTab === 'reminders' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span class="text-[7px] font-black uppercase">Alerts</span></button>
+                <button @click="openReports" :class="activeTab === 'reports' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg><span class="text-[7px] font-black uppercase">Intel</span></button>
             </nav>
         </div>
     </div>
@@ -178,72 +203,65 @@
                 return {
                     vaultKey: localStorage.getItem('vault_api_key') || '',
                     tempKey: '',
+                    loginError: false,
                     expenses: [],
-                    searchQuery: '',
-                    selectedFilter: 'All',
                     loading: false,
                     activeTab: 'vault',
-                    isEditingBudget: false,
+                    intelSearch: '',
+                    activeFilter: 'All',
+                    showSettings: false,
                     form: { desc: '', amt: '', cat: 'Food' },
-                    monthlyLimit: localStorage.getItem('user_budget') ? parseFloat(localStorage.getItem('user_budget')) : 10000,
-                    chart: null
+                    newBill: { name: '', day: '' },
+                    bills: JSON.parse(localStorage.getItem('user_bills') || '[]'),
+                    monthlyLimit: parseFloat(localStorage.getItem('user_budget')) || 5000,
+                    savingsGoal: parseFloat(localStorage.getItem('user_savings')) || 500,
+                    notificationStatus: Notification.permission
                 }
             },
             computed: {
-                greeting() {
-                    const h = new Date().getHours();
-                    return h < 12 ? "System Online // Morning" : h < 18 ? "System Online // Afternoon" : "System Online // Evening";
-                },
-                healthScore() {
-                    if(!this.expenses.length) return 100;
-                    return Math.max(0, 100 - this.percentUsed);
-                },
-                avgTicket() {
-                    return this.expenses.length ? (this.totalBalanceRaw / this.expenses.length).toFixed(2) : 0;
-                },
+                greeting() { return new Date().getHours() < 12 ? "Morning // Active" : "Evening // Active"; },
+                daysRemaining() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() - d.getDate() + 1; },
                 totalBalanceRaw() { return this.expenses.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0); },
-                totalBalanceFormatted() { return this.totalBalanceRaw.toLocaleString(undefined, { minimumFractionDigits: 2 }); },
-                percentUsed() { return Math.min(100, Math.round((this.totalBalanceRaw / this.monthlyLimit) * 100)); },
-                dailyAllowance() { return ((this.monthlyLimit - this.totalBalanceRaw) / 30).toFixed(2); },
-                vaultHealth() { return this.percentUsed < 50 ? "Optimal" : this.percentUsed < 85 ? "Warning" : "Critical"; },
-                dailyAvg() { return this.expenses.length ? this.totalBalanceRaw / 30 : 0; },
-                categoryTotals() {
-                    const cats = {};
-                    this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
-                    return cats;
+                percentUsed() { return Math.min(100, Math.round((this.totalBalanceRaw / (this.monthlyLimit - this.savingsGoal)) * 100)); },
+                dailyAllowance() { return ((this.monthlyLimit - this.savingsGoal - this.totalBalanceRaw) / this.daysRemaining).toFixed(2); },
+                processedIntel() { return this.expenses.filter(item => (item.Description.toLowerCase().includes(this.intelSearch.toLowerCase())) && (this.activeFilter === 'All' || item.Category === this.activeFilter)); },
+                filteredIntelTotal() { return this.processedIntel.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0).toFixed(2); },
+                topCategory() {
+                    if (!this.expenses.length) return 'None';
+                    const cats = {}; this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                    return Object.keys(cats).reduce((a, b) => cats[a] > cats[b] ? a : b);
                 },
-                merchantBreakdown() {
-                    const counts = {};
-                    this.expenses.forEach(e => counts[e.Description] = (counts[e.Description] || 0) + 1);
-                    return Object.fromEntries(Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 5));
+                topCategoryTotal() {
+                    if (!this.expenses.length) return '0';
+                    const cats = {}; this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                    return Math.max(...Object.values(cats)).toFixed(0);
                 },
-                topMerchant() {
-                    if (!this.expenses.length) return "---";
-                    const c = {}; this.expenses.forEach(e => c[e.Description] = (c[e.Description] || 0) + 1);
-                    return Object.keys(c).reduce((a, b) => c[a] > c[b] ? a : b);
-                },
-                filteredExpenses() {
-                    let list = [...this.expenses].reverse();
-                    if (this.searchQuery) list = list.filter(i => i.Description.toLowerCase().includes(this.searchQuery.toLowerCase()));
-                    if (this.selectedFilter !== 'All') list = list.filter(i => i.Category === this.selectedFilter);
-                    return list.slice(0, 15);
-                }
+                isNegative() { return (this.monthlyLimit - this.totalBalanceRaw) < 0; },
+                headerClass() { return this.isNegative ? 'header-warning' : ''; },
+                filteredExpenses() { return [...this.expenses].reverse().slice(0, 10); }
             },
             methods: {
+                requestNotify() { Notification.requestPermission().then(perm => { this.notificationStatus = perm; }); },
                 connectVault() {
-                    const cleanUrl = this.tempKey.trim();
-                    if (cleanUrl.includes('steinhq.com')) {
-                        localStorage.setItem('vault_api_key', cleanUrl);
-                        this.vaultKey = cleanUrl;
-                        this.loadData();
-                    } else { alert("Please enter a valid Stein API URL"); }
+                    if (this.tempKey.includes('steinhq.com')) {
+                        localStorage.setItem('vault_api_key', this.tempKey.trim());
+                        location.reload();
+                    } else {
+                        this.loginError = true;
+                        setTimeout(() => this.loginError = false, 500);
+                    }
                 },
-                logout() { if(confirm("Disconnect Vault?")) { localStorage.removeItem('vault_api_key'); location.reload(); } },
-                saveBudget() { localStorage.setItem('user_budget', this.monthlyLimit); this.isEditingBudget = false; },
-                getCatColor(cat) { return { 'Food': '#2df5b1', 'Bills': '#c4aa8f', 'Fun': '#8c6c53' }[cat] || '#634832'; },
-                formatNum(v) { return parseFloat(v || 0).toLocaleString(undefined, { minimumFractionDigits: 2 }); },
+                logout() { localStorage.clear(); location.reload(); },
+                saveBudget() { localStorage.setItem('user_budget', this.monthlyLimit); localStorage.setItem('user_savings', this.savingsGoal); this.showSettings = false; },
+                addBill() { if (this.newBill.name && this.newBill.day) { this.bills.push({...this.newBill}); localStorage.setItem('user_bills', JSON.stringify(this.bills)); this.newBill = { name: '', day: '' }; } },
+                removeBill(i) { this.bills.splice(i, 1); localStorage.setItem('user_bills', JSON.stringify(this.bills)); },
                 getIcon(c) { return { 'Food': '🍵', 'Bills': '📜', 'Fun': '✨' }[c] || '💳'; },
-                async openReports() { this.activeTab = 'reports'; this.$nextTick(() => this.renderChart()); },
+                openReports() { this.activeTab = 'reports'; this.$nextTick(() => { this.renderCharts(); }); },
+                renderCharts() {
+                    const cats = {}; this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                    new Chart(document.getElementById('reportChart'), { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#2df5b1', '#d4a373', '#8c6c53'], borderWidth: 0 }] }, options: { cutout: '85%', plugins: { legend: { display: false } } } });
+                    new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: ['Spend', 'Limit'], datasets: [{ data: [this.totalBalanceRaw, this.monthlyLimit], backgroundColor: ['#2df5b1', 'rgba(212, 163, 115, 0.2)'], borderRadius: 12 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#f2e9e4' } } } } });
+                },
                 async loadData() {
                     if (!this.vaultKey) return;
                     this.loading = true;
@@ -251,32 +269,14 @@
                         const res = await fetch(`${this.vaultKey}?_t=${Date.now()}`);
                         const data = await res.json();
                         this.expenses = Array.isArray(data) ? data.filter(i => i.Description) : [];
-                    } catch (e) { console.error("Sync Failed"); }
-                    finally { this.loading = false; }
+                    } finally { this.loading = false; }
                 },
                 async addExpense() {
-                    if (!this.form.desc || !this.form.amt) return;
                     this.loading = true;
-                    const detailedDate = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + ' • ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    const row = { Date: detailedDate, Description: this.form.desc.trim(), Amount: Number(this.form.amt), Category: this.form.cat };
-                    try {
-                        await fetch(this.vaultKey, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify([row]) });
-                        this.form.desc = ''; this.form.amt = '';
-                        setTimeout(() => this.loadData(), 1000);
-                    } catch (e) { alert("Sync Failed"); this.loading = false; }
-                },
-                renderChart() {
-                    const ctx = document.getElementById('reportChart')?.getContext('2d');
-                    if(!ctx) return;
-                    if(this.chart) this.chart.destroy();
-                    this.chart = new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: Object.keys(this.categoryTotals),
-                            datasets: [{ data: Object.values(this.categoryTotals), backgroundColor: ['#2df5b1', '#c4aa8f', '#8c6c53', '#634832'], borderWidth: 0 }]
-                        },
-                        options: { cutout: '85%', plugins: { legend: { display: false } } }
-                    });
+                    const row = { Date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), Description: this.form.desc, Amount: Number(this.form.amt), Category: this.form.cat };
+                    await fetch(this.vaultKey, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify([row]) });
+                    this.form.desc = ''; this.form.amt = '';
+                    setTimeout(() => this.loadData(), 1000);
                 }
             },
             mounted() { this.loadData(); }
