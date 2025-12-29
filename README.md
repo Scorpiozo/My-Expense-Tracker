@@ -22,7 +22,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 3.  Copy your **Stein API Endpoint URL**.
 
 ### 2. Connect the App
-1.  Open the [Live Demo of the site](https://scorpiozo.github.io/My-Expense-Tracker/) (Replace with your actual link).
+1.  Open the [Live Demo of the site](https://scorpiozo.github.io/My-Expense-Tracker/).
 2.  When the **Vault Lock** screen appears, paste your Stein API URL.
 3.  The app will securely save this link in your browser and sync your data.
 
