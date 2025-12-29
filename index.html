@@ -55,19 +55,17 @@
     <div id="app" v-cloak>
         
         <div v-if="!vaultKey" class="fixed inset-0 z-[200] bg-[#0f0b09] flex items-center justify-center px-8">
-            <div class="w-full max-w-sm" :class="{ 'shake': loginError }">
+            <div class="w-full max-sm" :class="{ 'shake': loginError }">
                 <div class="flex justify-center mb-8">
                     <div class="px-4 py-1.5 rounded-full border border-[#2df5b1]/20 bg-[#2df5b1]/5 flex items-center gap-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-[#2df5b1] animate-pulse"></span>
                         <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#2df5b1]">Secure Terminal v2.0</span>
                     </div>
                 </div>
-
                 <div class="luxury-card p-10 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-gradient-to-b from-[#2df5b1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     <div class="relative z-10 w-24 h-24 mx-auto mb-10 flex items-center justify-center">
                         <div class="absolute inset-0 border-2 border-dashed border-[#2df5b1]/20 rounded-[2.5rem] animate-[spin_10s_linear_infinite]"></div>
-                        <div class="absolute inset-2 border border-[#2df5b1]/10 rounded-[2rem]"></div>
                         <div class="w-16 h-16 bg-[#2df5b1] rounded-[1.8rem] flex items-center justify-center shadow-[0_0_40px_rgba(45,245,177,0.3)]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#17110e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                         </div>
@@ -91,32 +89,90 @@
                 </button>
             </div>
 
+            <div v-if="showManual" class="fixed inset-0 z-[500] bg-[#0f0b09]/98 backdrop-blur-3xl p-8 overflow-y-auto">
+    <div class="max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-2xl font-black uppercase tracking-tighter text-[#2df5b1]">Intelligence Lexicon</h2>
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Unified Logic & Workflow v4.2</p>
+            </div>
+            <button @click="showManual = false" class="text-3xl opacity-40">&times;</button>
+        </div>
+
+        <div class="space-y-8 pb-12">
+            <section>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-[#2df5b1]/10 flex items-center justify-center text-[#2df5b1] font-bold text-xs">01</div>
+                    <h3 class="text-xs font-black uppercase tracking-widest text-[#d4a373]">Interface Glossary</h3>
+                </div>
+                <div class="luxury-card p-6 space-y-6">
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Safe Daily Spend</p>
+                        <p class="text-[11px] opacity-70 leading-relaxed">The "Safe Zone." This is how much you can spend <span class="text-white font-bold">today</span> without eating into your Savings Goal. If this number is Red, you are over-budget.</p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5">
+                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Burn Rate</p>
+                        <p class="text-[11px] opacity-70 leading-relaxed">Your consumption velocity. Calculated as <span class="text-white font-bold">Total Spent ÷ Days Elapsed</span>. Shows average daily drain.</p>
+                    </div>
+                    <div class="pt-4 border-t border-white/5">
+                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Projected End</p>
+                        <p class="text-[11px] opacity-70 leading-relaxed">A predictive outcome. It shows where your total spending will land on the 30th if current habits persist.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-[#d4a373]/10 flex items-center justify-center text-[#d4a373] font-bold text-xs">02</div>
+                    <h3 class="text-xs font-black uppercase tracking-widest text-[#d4a373]">The Mathematics</h3>
+                </div>
+                <div class="luxury-card p-6 border-l-4 border-[#2df5b1]">
+                    <p class="text-[10px] font-bold mb-2 uppercase opacity-40">Safe-Zone Formula:</p>
+                    <div class="bg-black/40 p-4 rounded-xl font-mono text-[10px] text-[#2df5b1] mb-4">
+                        Allowance = (Limit - Savings - Spent) / Days_Left
+                    </div>
+                    <p class="text-[11px] opacity-60 leading-relaxed">The system prioritizes your Savings Goal as a "Locked Asset." If the Allowance turns <span class="text-red-500 font-bold">Red</span>, you have breached the safety buffer and are consuming your intended savings.</p>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white font-bold text-xs">03</div>
+                    <h3 class="text-xs font-black uppercase tracking-widest">Initialization Workflow</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="luxury-card p-5">
+                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Step 1: Calibrate</p>
+                        <p class="text-[11px] opacity-60">Tap the <span class="text-[#2df5b1]">Gear Icon</span>. Define your Monthly Limit (Income) and your Savings Goal. The system will auto-calculate your safe-to-spend remainder.</p>
+                    </div>
+                    <div class="luxury-card p-5">
+                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Step 2: Commit</p>
+                        <p class="text-[11px] opacity-60">Every purchase must be logged via the "Commit to Vault" form. This ensures the <span class="text-[#2df5b1]">Live Burn Rate</span> stays accurate.</p>
+                    </div>
+                    <div class="luxury-card p-5">
+                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Step 3: Monitor Intel</p>
+                        <p class="text-[11px] opacity-60">Review the Intel tab. If "Primary Consumption" exceeds 40% in a non-essential category, immediate habit correction is advised.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <button @click="showManual = false" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press sticky bottom-0 shadow-[0_-10px_30px_#0f0b09]">Resume Operation</button>
+    </div>
+</div>
+
             <div class="fab-container">
                 <button v-if="activeTab === 'reminders' && notificationStatus !== 'granted'" @click="requestNotify" class="fab-btn fab-notify btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
                 <button @click="showSettings = true" class="fab-btn fab-settings btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572-1.724 1.724 0 000-3.35 1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg></button>
             </div>
 
-            <div v-if="showSettings" class="fixed inset-0 z-[110] bg-[#0f0b09]/95 backdrop-blur-xl flex items-center justify-center px-6">
-                <div class="luxury-card p-8 w-full max-w-sm border-2 border-[#d4a373]">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-black uppercase tracking-tighter text-[#d4a373]">Calibration</h2>
-                        <button @click="showSettings = false" class="text-2xl opacity-40">&times;</button>
-                    </div>
-                    <div class="space-y-4">
-                        <input v-model.number="monthlyLimit" type="number" class="w-full p-4 outline-none" placeholder="Monthly Limit">
-                        <input v-model.number="savingsGoal" type="number" class="w-full p-4 outline-none" placeholder="Savings Goal">
-                        <button @click="saveBudget" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">Apply</button>
-                    </div>
-                </div>
-            </div>
-
             <div v-if="activeTab === 'vault'">
                 <header :class="headerClass" class="header-card p-8 rounded-[3rem] mb-6 shadow-2xl">
-                    <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Safe Daily Spend</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Safe Daily Spend ({{ currentMonthName }})</p>
                     <h1 class="text-6xl font-black tracking-tighter mb-4">${{ dailyAllowance > 0 ? dailyAllowance : '0.00' }}</h1>
                     <div class="h-1.5 bg-black/10 rounded-full mb-6 overflow-hidden"><div class="progress-fill" :style="{ width: percentUsed + '%' }"></div></div>
                     <div class="grid grid-cols-2 gap-4 border-t border-black/10 pt-4">
-                        <div><p class="text-[8px] font-black uppercase opacity-50">Total Spent</p><p class="text-sm font-bold">${{ totalBalanceRaw.toFixed(0) }}</p></div>
+                        <div><p class="text-[8px] font-black uppercase opacity-50">Month Total</p><p class="text-sm font-bold">${{ currentMonthTotal.toFixed(0) }}</p></div>
                         <div class="text-right"><p class="text-[8px] font-black uppercase opacity-50">Days Left</p><p class="text-sm font-bold">{{ daysRemaining }} Days</p></div>
                     </div>
                 </header>
@@ -133,7 +189,7 @@
                 </div>
 
                 <div class="space-y-3">
-                    <div v-for="(item, i) in filteredExpenses" :key="i" class="luxury-card p-4 flex justify-between items-center">
+                    <div v-for="(item, i) in currentMonthExpenses.slice(0,10)" :key="i" class="luxury-card p-4 flex justify-between items-center">
                         <div class="flex items-center gap-4">
                             <div class="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center text-lg">{{ getIcon(item.Category) }}</div>
                             <div><p class="font-bold text-sm">{{ item.Description }}</p><p class="text-[9px] text-[#d4a373] font-black uppercase opacity-50">{{ item.Date }}</p></div>
@@ -144,48 +200,95 @@
             </div>
 
             <div v-if="activeTab === 'reminders'">
-                <div class="mb-8 px-2"><p class="text-[10px] font-black uppercase opacity-40">Monthly Cycle</p><h2 class="text-4xl font-black tracking-tighter">Reminders</h2></div>
+                <div class="mb-6 px-2"><p class="text-[10px] font-black uppercase opacity-40">Monthly Recurring</p><h2 class="text-4xl font-black tracking-tighter">Alerts</h2></div>
                 <div class="luxury-card p-6 mb-6">
-                    <div class="flex gap-2">
-                        <input v-model="newBill.name" placeholder="Bill Name" class="flex-1 p-3 text-xs">
-                        <input v-model.number="newBill.day" type="number" placeholder="Day" class="w-16 p-3 text-xs">
-                        <button @click="addBill" class="mint-bg px-4 rounded-xl font-black text-xs">+</button>
-                    </div>
+                    <form @submit.prevent="addBill" class="flex gap-3">
+                        <input v-model="newBill.name" placeholder="New Alert Name..." class="flex-1 p-4 text-sm outline-none">
+                        <button class="mint-bg px-6 rounded-2xl font-black btn-press">+</button>
+                    </form>
                 </div>
                 <div class="space-y-3">
-                    <div v-for="(bill, index) in bills" :key="index" class="luxury-card p-5 flex justify-between items-center border-l-4 border-[#d4a373]">
-                        <div><p class="font-bold text-sm">{{ bill.name }}</p><p class="text-[9px] font-black opacity-40 uppercase">Day {{ bill.day }}</p></div>
-                        <button @click="removeBill(index)" class="text-red-500 opacity-20 text-xl">×</button>
+                    <div v-for="(bill, i) in bills" :key="i" class="luxury-card p-5 flex justify-between items-center transition-all" :class="bill.paid ? 'opacity-30 grayscale' : ''">
+                        <span class="font-bold tracking-tight text-sm" :class="bill.paid ? 'line-through' : ''">{{ bill.name }}</span>
+                        <div class="flex gap-2">
+                            <button @click="toggleBill(i)" :class="bill.paid ? 'bg-[#2df5b1] text-[#17110e]' : 'bg-black/40 text-[#2df5b1]'" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold border border-[#2df5b1]/20 btn-press">✓</button>
+                            <button @click="removeBill(i)" class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-bold btn-press">×</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div v-if="activeTab === 'reports'">
-                <div class="mb-6 px-2"><p class="text-[10px] font-black uppercase opacity-40">System Analytics</p><h2 class="text-4xl font-black tracking-tighter">Intelligence</h2></div>
+                <div class="flex justify-between items-end mb-6 px-2">
+                    <div><p class="text-[10px] font-black uppercase opacity-40">System Analytics</p><h2 class="text-4xl font-black tracking-tighter">Intelligence</h2></div>
+                    <button @click="showManual = true" class="w-10 h-10 rounded-xl bg-[#d4a373] text-[#17110e] flex items-center justify-center font-bold btn-press">?</button>
+                </div>
+
+                <div class="luxury-card p-6 mb-4 bg-gradient-to-br from-[#2df5b1]/10 to-transparent border-dashed">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-[8px] font-black uppercase opacity-50 mb-1">Projected End</p>
+                            <h3 class="text-3xl font-black tracking-tighter" :class="projectedTotal > (monthlyLimit - savingsGoal) ? 'text-red-400' : 'text-[#2df5b1]'">
+                                ${{ projectedTotal }}
+                            </h3>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] font-black uppercase opacity-50 mb-1">Burn Rate</p>
+                            <p class="text-sm font-bold text-[#d4a373]">${{ currentBurnRate }}/Day</p>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="luxury-card p-6 mb-6 border-l-4 border-[#2df5b1]">
-                    <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-2">Smart Analysis</p>
+                    <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-2">Smart Summary</p>
                     <p class="text-sm font-bold leading-relaxed">
-                        Consumption is at <span class="mint-glow">{{ percentUsed }}%</span>. 
-                        Burn entity is <span class="text-[#d4a373] uppercase">{{ topCategory }}</span> 
-                        totaling <span class="text-[#d4a373]">${{ topCategoryTotal }}</span>.
+                        Filtered dataset shows <span class="mint-glow">${{ filteredIntelTotal }}</span>. 
+                        Primary consumption is <span class="text-[#d4a373] uppercase">{{ topFilteredCategory }}</span> 
+                        accounting for <span class="text-[#d4a373]">{{ topFilteredPercent }}%</span> of results.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="luxury-card p-5"><p class="text-[8px] font-black uppercase opacity-40 mb-1">Filtered</p><p class="text-xl font-black mint-glow">${{ filteredIntelTotal }}</p></div>
-                    <div class="luxury-card p-5"><p class="text-[8px] font-black uppercase opacity-40 mb-1">Records</p><p class="text-xl font-black">{{ processedIntel.length }}</p></div>
-                </div>
-
                 <div class="luxury-card p-6 mb-6">
-                    <input v-model="intelSearch" type="text" placeholder="SEARCH..." class="w-full p-4 text-[10px] font-black uppercase outline-none bg-black/40 border border-white/5 rounded-2xl mb-4">
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <input v-model="intelSearch" type="text" placeholder="ENTITY..." class="p-4 text-[10px] font-black uppercase outline-none bg-black/40 border border-white/5 rounded-2xl">
+                        <select v-model="monthFilter" class="p-4 text-[10px] font-black uppercase">
+                            <option value="All">Lifetime</option>
+                            <option v-for="m in months" :value="m">{{ m.toUpperCase() }}</option>
+                        </select>
+                    </div>
                     <div class="flex gap-2 overflow-x-auto no-scrollbar">
                         <button v-for="cat in ['All', 'Food', 'Bills', 'Fun', 'Other']" @click="activeFilter = cat" :class="['filter-chip', activeFilter === cat ? 'filter-active' : 'text-white/30']">{{ cat }}</button>
                     </div>
                 </div>
 
                 <div class="luxury-card p-8 mb-6"><canvas id="reportChart"></canvas></div>
-                <div class="luxury-card p-8 mb-12"><div class="h-40"><canvas id="barChart"></canvas></div></div>
+
+                <div class="mb-4 px-2"><p class="text-[10px] font-black uppercase opacity-40">Matching Records ({{ processedIntel.length }})</p></div>
+                <div class="space-y-3 mb-12">
+                    <div v-for="(item, i) in processedIntel" :key="i" class="luxury-card p-4 flex justify-between items-center opacity-80 hover:opacity-100 transition-opacity">
+                        <div class="flex items-center gap-4">
+                            <div class="text-xs">{{ getIcon(item.Category) }}</div>
+                            <div><p class="font-bold text-xs">{{ item.Description }}</p><p class="text-[8px] opacity-40 uppercase">{{ item.Date }}</p></div>
+                        </div>
+                        <p class="text-xs font-black">-${{ item.Amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="showSettings" class="fixed inset-0 z-[300] bg-[#0f0b09]/95 backdrop-blur-xl flex items-center justify-center px-6">
+                <div class="luxury-card p-8 w-full max-w-sm border-2 border-[#d4a373]">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-black uppercase tracking-tighter text-[#d4a373]">Calibration</h2>
+                        <button @click="showSettings = false" class="text-2xl opacity-40">&times;</button>
+                    </div>
+                    <div class="space-y-4">
+                        <label class="text-[9px] font-black uppercase opacity-40 ml-2">Total Budget Limit</label>
+                        <input v-model.number="monthlyLimit" type="number" class="w-full p-4 outline-none" placeholder="Monthly Limit">
+                        <label class="text-[9px] font-black uppercase opacity-40 ml-2">Monthly Savings Goal</label>
+                        <input v-model.number="savingsGoal" type="number" class="w-full p-4 outline-none" placeholder="Savings Goal">
+                        <button @click="saveBudget" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">Apply Changes</button>
+                    </div>
+                </div>
             </div>
 
             <nav class="fixed bottom-0 left-0 right-0 glass-nav px-8 py-6 flex justify-around items-center z-50">
@@ -202,43 +305,52 @@
             data() {
                 return {
                     vaultKey: localStorage.getItem('vault_api_key') || '',
-                    tempKey: '',
-                    loginError: false,
-                    expenses: [],
-                    loading: false,
-                    activeTab: 'vault',
-                    intelSearch: '',
-                    activeFilter: 'All',
-                    showSettings: false,
+                    tempKey: '', loginError: false, loading: false, activeTab: 'vault',
+                    intelSearch: '', activeFilter: 'All', monthFilter: 'All',
+                    showSettings: false, showManual: false,
+                    expenses: [], 
                     form: { desc: '', amt: '', cat: 'Food' },
-                    newBill: { name: '', day: '' },
+                    newBill: { name: '' },
                     bills: JSON.parse(localStorage.getItem('user_bills') || '[]'),
                     monthlyLimit: parseFloat(localStorage.getItem('user_budget')) || 5000,
                     savingsGoal: parseFloat(localStorage.getItem('user_savings')) || 500,
-                    notificationStatus: Notification.permission
+                    notificationStatus: Notification.permission,
+                    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
                 }
             },
             computed: {
                 greeting() { return new Date().getHours() < 12 ? "Morning // Active" : "Evening // Active"; },
-                daysRemaining() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() - d.getDate() + 1; },
-                totalBalanceRaw() { return this.expenses.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0); },
-                percentUsed() { return Math.min(100, Math.round((this.totalBalanceRaw / (this.monthlyLimit - this.savingsGoal)) * 100)); },
-                dailyAllowance() { return ((this.monthlyLimit - this.savingsGoal - this.totalBalanceRaw) / this.daysRemaining).toFixed(2); },
-                processedIntel() { return this.expenses.filter(item => (item.Description.toLowerCase().includes(this.intelSearch.toLowerCase())) && (this.activeFilter === 'All' || item.Category === this.activeFilter)); },
+                currentMonthName() { return new Date().toLocaleDateString('en-US', { month: 'short' }); },
+                currentDay() { return new Date().getDate(); },
+                daysInMonth() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); },
+                daysRemaining() { return this.daysInMonth - this.currentDay + 1; },
+                currentMonthExpenses() { return this.expenses.filter(e => e.Date && e.Date.includes(this.currentMonthName)).reverse(); },
+                currentMonthTotal() { return this.currentMonthExpenses.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0); },
+                percentUsed() { return Math.min(100, Math.round((this.currentMonthTotal / (this.monthlyLimit - this.savingsGoal)) * 100)); },
+                dailyAllowance() { return ((this.monthlyLimit - this.savingsGoal - this.currentMonthTotal) / this.daysRemaining).toFixed(2); },
+                headerClass() { return this.dailyAllowance < 0 ? 'header-warning' : ''; },
+                currentBurnRate() { return (this.currentMonthTotal / this.currentDay).toFixed(2); },
+                projectedTotal() { return (this.currentBurnRate * this.daysInMonth).toFixed(0); },
+                processedIntel() { 
+                    return this.expenses.filter(item => {
+                        const matchSearch = item.Description.toLowerCase().includes(this.intelSearch.toLowerCase());
+                        const matchCat = this.activeFilter === 'All' || item.Category === this.activeFilter;
+                        const matchMonth = this.monthFilter === 'All' || item.Date.includes(this.monthFilter);
+                        return matchSearch && matchCat && matchMonth;
+                    }).reverse(); 
+                },
                 filteredIntelTotal() { return this.processedIntel.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0).toFixed(2); },
-                topCategory() {
-                    if (!this.expenses.length) return 'None';
-                    const cats = {}; this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                topFilteredCategory() {
+                    if (!this.processedIntel.length) return 'None';
+                    const cats = {}; this.processedIntel.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
                     return Object.keys(cats).reduce((a, b) => cats[a] > cats[b] ? a : b);
                 },
-                topCategoryTotal() {
-                    if (!this.expenses.length) return '0';
-                    const cats = {}; this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
-                    return Math.max(...Object.values(cats)).toFixed(0);
-                },
-                isNegative() { return (this.monthlyLimit - this.totalBalanceRaw) < 0; },
-                headerClass() { return this.isNegative ? 'header-warning' : ''; },
-                filteredExpenses() { return [...this.expenses].reverse().slice(0, 10); }
+                topFilteredPercent() {
+                    if (!this.processedIntel.length) return 0;
+                    const cats = {}; this.processedIntel.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                    const total = Object.values(cats).reduce((a, b) => a + b, 0);
+                    return ((Math.max(...Object.values(cats)) / total) * 100).toFixed(0);
+                }
             },
             methods: {
                 requestNotify() { Notification.requestPermission().then(perm => { this.notificationStatus = perm; }); },
@@ -246,21 +358,46 @@
                     if (this.tempKey.includes('steinhq.com')) {
                         localStorage.setItem('vault_api_key', this.tempKey.trim());
                         location.reload();
-                    } else {
-                        this.loginError = true;
-                        setTimeout(() => this.loginError = false, 500);
-                    }
+                    } else { this.loginError = true; setTimeout(() => this.loginError = false, 500); }
                 },
                 logout() { localStorage.clear(); location.reload(); },
-                saveBudget() { localStorage.setItem('user_budget', this.monthlyLimit); localStorage.setItem('user_savings', this.savingsGoal); this.showSettings = false; },
-                addBill() { if (this.newBill.name && this.newBill.day) { this.bills.push({...this.newBill}); localStorage.setItem('user_bills', JSON.stringify(this.bills)); this.newBill = { name: '', day: '' }; } },
-                removeBill(i) { this.bills.splice(i, 1); localStorage.setItem('user_bills', JSON.stringify(this.bills)); },
+                saveBudget() { 
+                    localStorage.setItem('user_budget', this.monthlyLimit); 
+                    localStorage.setItem('user_savings', this.savingsGoal); 
+                    this.showSettings = false; 
+                },
+                addBill() { 
+                    if (this.newBill.name) { 
+                        this.bills.push({name: this.newBill.name, paid: false}); 
+                        this.persistBills(); 
+                        this.newBill.name = ''; 
+                    } 
+                },
+                toggleBill(i) { this.bills[i].paid = !this.bills[i].paid; this.persistBills(); },
+                removeBill(i) { this.bills.splice(i, 1); this.persistBills(); },
+                persistBills() { localStorage.setItem('user_bills', JSON.stringify(this.bills)); },
                 getIcon(c) { return { 'Food': '🍵', 'Bills': '📜', 'Fun': '✨' }[c] || '💳'; },
-                openReports() { this.activeTab = 'reports'; this.$nextTick(() => { this.renderCharts(); }); },
+                openReports() { 
+                    this.activeTab = 'reports'; 
+                    this.$nextTick(() => { this.renderCharts(); }); 
+                },
                 renderCharts() {
-                    const cats = {}; this.expenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
-                    new Chart(document.getElementById('reportChart'), { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#2df5b1', '#d4a373', '#8c6c53'], borderWidth: 0 }] }, options: { cutout: '85%', plugins: { legend: { display: false } } } });
-                    new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: ['Spend', 'Limit'], datasets: [{ data: [this.totalBalanceRaw, this.monthlyLimit], backgroundColor: ['#2df5b1', 'rgba(212, 163, 115, 0.2)'], borderRadius: 12 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#f2e9e4' } } } } });
+                    const canvas = document.getElementById('reportChart');
+                    if (!canvas) return;
+                    const cats = {}; this.processedIntel.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                    if (this.chartInstance) this.chartInstance.destroy();
+                    this.chartInstance = new Chart(canvas, { 
+                        type: 'doughnut', 
+                        data: { 
+                            labels: Object.keys(cats), 
+                            datasets: [{ 
+                                data: Object.values(cats), 
+                                backgroundColor: ['#2df5b1', '#d4a373', '#8c6c53', '#3d1c1c'], 
+                                borderWidth: 0 
+                            }] 
+                        }, 
+                        options: { cutout: '85%', plugins: { legend: { display: false } } } 
+                    });
                 },
                 async loadData() {
                     if (!this.vaultKey) return;
@@ -269,14 +406,22 @@
                         const res = await fetch(`${this.vaultKey}?_t=${Date.now()}`);
                         const data = await res.json();
                         this.expenses = Array.isArray(data) ? data.filter(i => i.Description) : [];
-                    } finally { this.loading = false; }
+                    } catch(e) { console.error("Sync Failed"); } finally { this.loading = false; }
                 },
                 async addExpense() {
                     this.loading = true;
-                    const row = { Date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), Description: this.form.desc, Amount: Number(this.form.amt), Category: this.form.cat };
-                    await fetch(this.vaultKey, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify([row]) });
-                    this.form.desc = ''; this.form.amt = '';
-                    setTimeout(() => this.loadData(), 1000);
+                    const row = { 
+                        Date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), 
+                        Description: this.form.desc, Amount: Number(this.form.amt), Category: this.form.cat 
+                    };
+                    try {
+                        await fetch(this.vaultKey, { 
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify([row]) 
+                        });
+                        this.form.desc = ''; this.form.amt = '';
+                        setTimeout(() => this.loadData(), 1000);
+                    } catch(e) { this.loading = false; }
                 }
             },
             mounted() { this.loadData(); }
