@@ -29,12 +29,6 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 3.  The app will securely save this link in your browser and sync your data.
 4.  Under the intelligence tab of the site is a question mark icon which on pressing will open a mini guide of the app
 
-## 🛠️ Built With
-* **Vue.js 3** - Reactive UI Framework
-* **Tailwind CSS** - Modern styling and layout
-* **Chart.js** - Financial data visualization
-* **Stein API** - Google Sheets as a REST API
-
 ## 🔒 Security & Privacy
 * **Zero Backend:** This app has no server. Your data flows directly from your browser to your Google Sheet.
 * **Local Secret Storage:** Your API key is never pushed to GitHub. It stays on your device using `localStorage`.
@@ -48,6 +42,6 @@ This project leverages a modern **Serverless Stack** designed for speed and priv
 * **Design:** [Tailwind CSS](https://tailwindcss.com/) for the custom glass-morphism UI.
 * **Data Visualization:** [Chart.js](https://www.chartjs.org/) for real-time expenditure analytics.
 * **Backend-as-a-Service:** [Stein](https://steinhq.com/) to interface with Google Sheets.
-* **Storage:** Google Sheets (acting as a NoSQL-style database).
+* **Storage:** Google Sheets as a REST API (acting as a NoSQL-style database).
 ---
 *Created by a well wisher*
