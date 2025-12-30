@@ -28,6 +28,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 2.  When the **Vault Lock** screen appears, paste your Stein API URL.
 3.  The app will securely save this link in your browser and sync your data.
 4.  Under the intelligence tab of the site is a question mark icon which on pressing will open a mini guide of the app
+5.  Add to home screen to see the site icon
 
 ## 🔒 Security & Privacy
 * **Zero Backend:** This app has no server. Your data flows directly from your browser to your Google Sheet.
