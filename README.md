@@ -16,7 +16,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 ## 🚀 Deployment Guide
 (The file doesn't need to be downloaded for the site to work, however use chrome as the browser) 
 
-[THE SITE](https://scorpiozo.github.io/My-Expense-Tracker/)ALSO HAS A LIVE DEMO BUTTON TO GET TO KNOW THE APPLICATION
+[THE SITE](https://scorpiozo.github.io/My-Expense-Tracker/) ALSO HAS A LIVE DEMO BUTTON TO GET TO KNOW THE APPLICATION
 
 ### 1. Prepare your Database
 1.  Create a **Google Sheet** with the following headers in the first row:
