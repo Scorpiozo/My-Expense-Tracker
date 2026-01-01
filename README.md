@@ -20,7 +20,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
     `Date`, `Description`, `Category`, `Amount`
 2.  Go to [SteinHQ.com](https://steinhq.com/) and create a new API using your Google Sheet URL. Make sure 'Anyone with link can view'. Also allow stein to access Google for permissions (use incognito to login to stein if your device has too much cache!) 
 3.  Copy your **Stein API Endpoint URL** and add '/the name of your sheet' which is by default 'Sheet1' at the end of this url obtained. That is your final stein link.
-4.  I know it sounds like a whole lot, but this is the first step towards setting up your personal database. Don't let yourself be intimidated when u can try something new! 
+4.  I know it sounds like a whole lot, but this is the first step towards setting up your personal database. Don't let yourself be intimidated when you can try something new! 
    <img width="505" height="273" alt="image" src="https://github.com/user-attachments/assets/2cb218a7-d91c-49aa-804d-1c13bf385938" />
 
 
