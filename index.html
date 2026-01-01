@@ -77,6 +77,7 @@
                     <div class="space-y-4 relative z-10">
                         <input v-model="tempKey" type="password" placeholder="HTTPS://STEINHQ.COM/..." class="w-full p-5 text-center text-[10px] font-black tracking-widest outline-none bg-black/60 border border-white/5 rounded-2xl focus:border-[#2df5b1]/40 transition-all duration-300 placeholder:opacity-20">
                         <button @click="connectVault" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press shadow-[0_10px_20px_rgba(45,245,177,0.2)]">Initialize Link</button>
+                        <button @click="enterGuestMode" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl font-black text-[9px] uppercase tracking-[0.2em] text-white/40 btn-press">View Site Demo</button>
                     </div>
                 </div>
             </div>
@@ -85,83 +86,43 @@
         <div v-else class="max-w-md mx-auto px-6 pt-10">
             
             <div class="flex justify-between items-start mb-6 px-2">
-                <div><p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{{ greeting }}</p></div>
+                <div><p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{{ greeting }} <span v-if="isGuestMode" class="text-red-500">(DEMO)</span></p></div>
                 <button @click="logout" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-red-500 btn-press">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                 </button>
             </div>
 
             <div v-if="showManual" class="fixed inset-0 z-[500] bg-[#0f0b09]/98 backdrop-blur-3xl p-8 overflow-y-auto">
-    <div class="max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-10">
-            <div>
-                <h2 class="text-2xl font-black uppercase tracking-tighter text-[#2df5b1]">Intelligence Lexicon</h2>
-                <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Unified Logic & Workflow v4.2</p>
+                <div class="max-w-md mx-auto">
+                    <div class="flex justify-between items-center mb-10">
+                        <div>
+                            <h2 class="text-2xl font-black uppercase tracking-tighter text-[#2df5b1]">Intelligence Lexicon</h2>
+                            <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Unified Logic & Workflow v4.2</p>
+                        </div>
+                        <button @click="showManual = false" class="text-3xl opacity-40">&times;</button>
+                    </div>
+
+                    <div class="space-y-8 pb-12">
+                        <section>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#2df5b1]/10 flex items-center justify-center text-[#2df5b1] font-bold text-xs">01</div>
+                                <h3 class="text-xs font-black uppercase tracking-widest text-[#d4a373]">Interface Glossary</h3>
+                            </div>
+                            <div class="luxury-card p-6 space-y-6">
+                                <div>
+                                    <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Safe Daily Spend</p>
+                                    <p class="text-[11px] opacity-70 leading-relaxed">The "Safe Zone." This is how much you can spend <span class="text-white font-bold">today</span> without eating into your Savings Goal.</p>
+                                </div>
+                                <div class="pt-4 border-t border-white/5">
+                                    <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Burn Rate</p>
+                                    <p class="text-[11px] opacity-70 leading-relaxed">Your consumption velocity. Calculated as <span class="text-white font-bold">Total Spent ÷ Days Elapsed</span>.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <button @click="showManual = false" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press sticky bottom-0">Resume Operation</button>
+                </div>
             </div>
-            <button @click="showManual = false" class="text-3xl opacity-40">&times;</button>
-        </div>
-
-        <div class="space-y-8 pb-12">
-            <section>
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-[#2df5b1]/10 flex items-center justify-center text-[#2df5b1] font-bold text-xs">01</div>
-                    <h3 class="text-xs font-black uppercase tracking-widest text-[#d4a373]">Interface Glossary</h3>
-                </div>
-                <div class="luxury-card p-6 space-y-6">
-                    <div>
-                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Safe Daily Spend</p>
-                        <p class="text-[11px] opacity-70 leading-relaxed">The "Safe Zone." This is how much you can spend <span class="text-white font-bold">today</span> without eating into your Savings Goal. If this number is Red, you are over-budget.</p>
-                    </div>
-                    <div class="pt-4 border-t border-white/5">
-                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Burn Rate</p>
-                        <p class="text-[11px] opacity-70 leading-relaxed">Your consumption velocity. Calculated as <span class="text-white font-bold">Total Spent ÷ Days Elapsed</span>. Shows average daily drain.</p>
-                    </div>
-                    <div class="pt-4 border-t border-white/5">
-                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Projected End</p>
-                        <p class="text-[11px] opacity-70 leading-relaxed">A predictive outcome. It shows where your total spending will land on the 30th if current habits persist.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-[#d4a373]/10 flex items-center justify-center text-[#d4a373] font-bold text-xs">02</div>
-                    <h3 class="text-xs font-black uppercase tracking-widest text-[#d4a373]">The Mathematics</h3>
-                </div>
-                <div class="luxury-card p-6 border-l-4 border-[#2df5b1]">
-                    <p class="text-[10px] font-bold mb-2 uppercase opacity-40">Safe-Zone Formula:</p>
-                    <div class="bg-black/40 p-4 rounded-xl font-mono text-[10px] text-[#2df5b1] mb-4">
-                        Allowance = (Limit - Savings - Spent) / Days_Left
-                    </div>
-                    <p class="text-[11px] opacity-60 leading-relaxed">The system prioritizes your Savings Goal as a "Locked Asset." If the Allowance turns <span class="text-red-500 font-bold">Red</span>, you have breached the safety buffer and are consuming your intended savings.</p>
-                </div>
-            </section>
-
-            <section>
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white font-bold text-xs">03</div>
-                    <h3 class="text-xs font-black uppercase tracking-widest">Initialization Workflow</h3>
-                </div>
-                <div class="space-y-4">
-                    <div class="luxury-card p-5">
-                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Step 1: Calibrate</p>
-                        <p class="text-[11px] opacity-60">Tap the <span class="text-[#2df5b1]">Gear Icon</span>. Define your Monthly Limit (Income) and your Savings Goal. The system will auto-calculate your safe-to-spend remainder.</p>
-                    </div>
-                    <div class="luxury-card p-5">
-                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Step 2: Commit</p>
-                        <p class="text-[11px] opacity-60">Every purchase must be logged via the "Commit to Vault" form. This ensures the <span class="text-[#2df5b1]">Live Burn Rate</span> stays accurate.</p>
-                    </div>
-                    <div class="luxury-card p-5">
-                        <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Step 3: Monitor Intel</p>
-                        <p class="text-[11px] opacity-60">Review the Intel tab. If "Primary Consumption" exceeds 40% in a non-essential category, immediate habit correction is advised.</p>
-                    </div>
-                </div>
-            </section>
-        </div>
-        
-        <button @click="showManual = false" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press sticky bottom-0 shadow-[0_-10px_30px_#0f0b09]">Resume Operation</button>
-    </div>
-</div>
 
             <div class="fab-container">
                 <button v-if="activeTab === 'reminders' && notificationStatus !== 'granted'" @click="requestNotify" class="fab-btn fab-notify btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
@@ -241,15 +202,6 @@
                     </div>
                 </div>
 
-                <div class="luxury-card p-6 mb-6 border-l-4 border-[#2df5b1]">
-                    <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-2">Smart Summary</p>
-                    <p class="text-sm font-bold leading-relaxed">
-                        Filtered dataset shows <span class="mint-glow">${{ filteredIntelTotal }}</span>. 
-                        Primary consumption is <span class="text-[#d4a373] uppercase">{{ topFilteredCategory }}</span> 
-                        accounting for <span class="text-[#d4a373]">{{ topFilteredPercent }}%</span> of results.
-                    </p>
-                </div>
-
                 <div class="luxury-card p-6 mb-6">
                     <div class="grid grid-cols-2 gap-2 mb-4">
                         <input v-model="intelSearch" type="text" placeholder="ENTITY..." class="p-4 text-[10px] font-black uppercase outline-none bg-black/40 border border-white/5 rounded-2xl">
@@ -265,9 +217,8 @@
 
                 <div class="luxury-card p-8 mb-6"><canvas id="reportChart"></canvas></div>
 
-                <div class="mb-4 px-2"><p class="text-[10px] font-black uppercase opacity-40">Matching Records ({{ processedIntel.length }})</p></div>
                 <div class="space-y-3 mb-12">
-                    <div v-for="(item, i) in processedIntel" :key="i" class="luxury-card p-4 flex justify-between items-center opacity-80 hover:opacity-100 transition-opacity">
+                    <div v-for="(item, i) in processedIntel" :key="i" class="luxury-card p-4 flex justify-between items-center opacity-80">
                         <div class="flex items-center gap-4">
                             <div class="text-xs">{{ getIcon(item.Category) }}</div>
                             <div><p class="font-bold text-xs">{{ item.Description }}</p><p class="text-[8px] opacity-40 uppercase">{{ item.Date }}</p></div>
@@ -285,9 +236,9 @@
                     </div>
                     <div class="space-y-4">
                         <label class="text-[9px] font-black uppercase opacity-40 ml-2">Total Budget Limit</label>
-                        <input v-model.number="monthlyLimit" type="number" class="w-full p-4 outline-none" placeholder="Monthly Limit">
+                        <input v-model.number="monthlyLimit" type="number" class="w-full p-4 outline-none">
                         <label class="text-[9px] font-black uppercase opacity-40 ml-2">Monthly Savings Goal</label>
-                        <input v-model.number="savingsGoal" type="number" class="w-full p-4 outline-none" placeholder="Savings Goal">
+                        <input v-model.number="savingsGoal" type="number" class="w-full p-4 outline-none">
                         <button @click="saveBudget" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">Apply Changes</button>
                     </div>
                 </div>
@@ -309,7 +260,7 @@
                     vaultKey: localStorage.getItem('vault_api_key') || '',
                     tempKey: '', loginError: false, loading: false, activeTab: 'vault',
                     intelSearch: '', activeFilter: 'All', monthFilter: 'All',
-                    showSettings: false, showManual: false,
+                    showSettings: false, showManual: false, isGuestMode: false,
                     expenses: [], 
                     form: { desc: '', amt: '', cat: 'Food' },
                     newBill: { name: '' },
@@ -337,24 +288,20 @@
                     return this.expenses.filter(item => {
                         const matchSearch = item.Description.toLowerCase().includes(this.intelSearch.toLowerCase());
                         const matchCat = this.activeFilter === 'All' || item.Category === this.activeFilter;
-                        const matchMonth = this.monthFilter === 'All' || item.Date.includes(this.monthFilter);
+                        const matchMonth = this.monthFilter === 'All' || (item.Date && item.Date.includes(this.monthFilter));
                         return matchSearch && matchCat && matchMonth;
                     }).reverse(); 
-                },
-                filteredIntelTotal() { return this.processedIntel.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0).toFixed(2); },
-                topFilteredCategory() {
-                    if (!this.processedIntel.length) return 'None';
-                    const cats = {}; this.processedIntel.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
-                    return Object.keys(cats).reduce((a, b) => cats[a] > cats[b] ? a : b);
-                },
-                topFilteredPercent() {
-                    if (!this.processedIntel.length) return 0;
-                    const cats = {}; this.processedIntel.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
-                    const total = Object.values(cats).reduce((a, b) => a + b, 0);
-                    return ((Math.max(...Object.values(cats)) / total) * 100).toFixed(0);
                 }
             },
             methods: {
+                enterGuestMode() {
+                    this.vaultKey = 'GUEST_MODE';
+                    this.isGuestMode = true;
+                    this.expenses = [
+                        { Date: `${this.currentMonthName} 01`, Description: "Demo: Food", Category: "Food", Amount: 20 },
+                        { Date: `${this.currentMonthName} 05`, Description: "Demo: Coffee", Category: "Food", Amount: 5 }
+                    ];
+                },
                 requestNotify() { Notification.requestPermission().then(perm => { this.notificationStatus = perm; }); },
                 connectVault() {
                     if (this.tempKey.includes('steinhq.com')) {
@@ -369,6 +316,7 @@
                     this.showSettings = false; 
                 },
                 addBill() { 
+                    if (this.isGuestMode) { alert("DEMO: Alerts are local-only."); }
                     if (this.newBill.name) { 
                         this.bills.push({name: this.newBill.name, paid: false}); 
                         this.persistBills(); 
@@ -402,7 +350,7 @@
                     });
                 },
                 async loadData() {
-                    if (!this.vaultKey) return;
+                    if (!this.vaultKey || this.isGuestMode) return;
                     this.loading = true;
                     try {
                         const res = await fetch(`${this.vaultKey}?_t=${Date.now()}`);
@@ -411,24 +359,38 @@
                     } catch(e) { console.error("Sync Failed"); } finally { this.loading = false; }
                 },
                 async addExpense() {
-                    this.loading = true;
-                    const row = { 
-                        Date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), 
-                        Description: this.form.desc, Amount: Number(this.form.amt), Category: this.form.cat 
-                    };
-                    try {
-                        await fetch(this.vaultKey, { 
-                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                            body: JSON.stringify([row]) 
-                        });
-                        this.form.desc = ''; this.form.amt = '';
-                        setTimeout(() => this.loadData(), 1000);
-                    } catch(e) { this.loading = false; }
-                }
+    if (this.isGuestMode) {
+        alert("ACCESS DENIED: Read-only Demo.\n\nSetup instructions:\nhttps://github.com/Scorpiozo/My-Expense-Tracker");
+        this.form.desc = ''; this.form.amt = ''; return;
+    }
+    this.loading = true;
+    
+    const row = { 
+        Date: new Date().toLocaleString('en-US', { 
+            weekday: 'short', 
+            hour: 'numeric', 
+            minute: '2-digit', 
+            month: 'short', 
+            day: 'numeric',
+            year: 'numeric'
+        }).replace(/,/g, ''), 
+        Description: this.form.desc, 
+        Amount: Number(this.form.amt), 
+        Category: this.form.cat 
+    };
+
+    try {
+        await fetch(this.vaultKey, { 
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify([row]) 
+        });
+        this.form.desc = ''; this.form.amt = '';
+        setTimeout(() => this.loadData(), 1000);
+    } catch(e) { this.loading = false; }
+}
             },
             mounted() { this.loadData(); }
         }).mount('#app');
     </script>
 </body>
 </html>
-
