@@ -359,35 +359,24 @@
                     } catch(e) { console.error("Sync Failed"); } finally { this.loading = false; }
                 },
                 async addExpense() {
-    if (this.isGuestMode) {
-        alert("ACCESS DENIED: Read-only Demo.\n\nSetup instructions:\nhttps://github.com/Scorpiozo/My-Expense-Tracker");
-        this.form.desc = ''; this.form.amt = ''; return;
-    }
-    this.loading = true;
-    
-    const row = { 
-        Date: new Date().toLocaleString('en-US', { 
-            weekday: 'short', 
-            hour: 'numeric', 
-            minute: '2-digit', 
-            month: 'short', 
-            day: 'numeric',
-            year: 'numeric'
-        }).replace(/,/g, ''), 
-        Description: this.form.desc, 
-        Amount: Number(this.form.amt), 
-        Category: this.form.cat 
-    };
-
-    try {
-        await fetch(this.vaultKey, { 
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify([row]) 
-        });
-        this.form.desc = ''; this.form.amt = '';
-        setTimeout(() => this.loadData(), 1000);
-    } catch(e) { this.loading = false; }
-}
+                    if (this.isGuestMode) {
+                        alert("ACCESS DENIED: Read-only Demo.\n\nSetup instructions:\nhttps://github.com/Scorpiozo/My-Expense-Tracker");
+                        this.form.desc = ''; this.form.amt = ''; return;
+                    }
+                    this.loading = true;
+                    const row = { 
+                        Date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), 
+                        Description: this.form.desc, Amount: Number(this.form.amt), Category: this.form.cat 
+                    };
+                    try {
+                        await fetch(this.vaultKey, { 
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify([row]) 
+                        });
+                        this.form.desc = ''; this.form.amt = '';
+                        setTimeout(() => this.loadData(), 1000);
+                    } catch(e) { this.loading = false; }
+                }
             },
             mounted() { this.loadData(); }
         }).mount('#app');
