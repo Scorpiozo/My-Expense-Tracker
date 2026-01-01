@@ -10,7 +10,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 ## ✨ Key Features
 * **Intelligence Overhaul:** Real-time financial health scoring and category heatmaps.
 * **Vault Lock:** Zero hard-coded API keys. Your data connection is stored securely in your browser's local storage.
-* **Automated Analytics:** Doughnut charts for category distribution and merchant frequency tracking.
+* **Automated Analytics:** Doughnut charts for category distribution and category frequency tracking.
 * **Mobile-First Design:** A sleek, glass-morphism interface designed for quick entries on the go.
 
 ## 🚀 Deployment Guide
