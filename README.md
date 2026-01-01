@@ -14,7 +14,7 @@ Total Vault is a luxury-themed financial tracking application built with Vue.js 
 * **Mobile-First Design:** A sleek, glass-morphism interface designed for quick entries on the go.
 
 ## 🚀 Deployment Guide
-(The file doesn't need to be downloaded for the site to work) 
+(The file doesn't need to be downloaded for the site to work, however use chrome as the browser) 
 
 ### 1. Prepare your Database
 1.  Create a **Google Sheet** with the following headers in the first row:
