@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthy Pro | Total Vault v4</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f0b09; color: #f2e9e4; min-height: 100vh; overflow-x: hidden; }
+        
+        /* UI Components */
+        .luxury-card { background: rgba(44, 31, 24, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(45, 245, 177, 0.15); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); border-radius: 2rem; }
+        .header-card { background: linear-gradient(165deg, #d4a373 0%, #a98467 100%); color: #17110e; position: relative; overflow: hidden; }
+        .header-warning { background: #3d1c1c !important; color: #ef4444 !important; border: 2px solid #ef4444; }
+        
+        /* Accents */
+        .mint-glow { color: #2df5b1; text-shadow: 0 0 10px rgba(45, 245, 177, 0.3); }
+        .mint-bg { background: #2df5b1; color: #17110e; }
+        .btn-press:active { transform: scale(0.96); transition: 0.1s; }
+        
+        /* Inputs */
+        input, select { background: rgba(0, 0, 0, 0.4) !important; color: #f2e9e4 !important; border: 1px solid rgba(212, 163, 115, 0.1) !important; border-radius: 1.25rem; }
+        .glass-nav { background: rgba(15, 11, 9, 0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(212, 163, 115, 0.1); }
+        
+        /* Progress & Chips */
+        .progress-fill { background: #17110e; height: 100%; transition: width 0.8s; }
+        .filter-chip { padding: 6px 16px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .filter-active { background: #2df5b1; color: #17110e; border-color: #2df5b1; }
+
+        /* Animations */
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Navigation FABs */
+        .fab-container { position: fixed; bottom: 100px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 100; }
+        .fab-btn { width: 56px; height: 56px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(45, 245, 177, 0.3); cursor: pointer; border: none; }
+        .fab-settings { background: #2df5b1; color: #17110e; }
+        .fab-notify { background: #d4a373; color: #17110e; animation: float 3s ease-in-out infinite; }
+
+        [v-cloak] { display: none; }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="pb-32">
+
+    <div id="app" v-cloak>
+        
+        <div v-if="!vaultKey" class="fixed inset-0 z-[200] bg-[#0f0b09] flex items-center justify-center px-8">
+            <div class="w-full max-sm" :class="{ 'shake': loginError }">
+                <div class="flex justify-center mb-8">
+                    <div class="px-4 py-1.5 rounded-full border border-[#2df5b1]/20 bg-[#2df5b1]/5 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#2df5b1] animate-pulse"></span>
+                        <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#2df5b1]">Secure Terminal v2.0</span>
+                    </div>
+                </div>
+                <div class="luxury-card p-10 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#2df5b1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div class="relative z-10 w-24 h-24 mx-auto mb-10 flex items-center justify-center">
+                        <div class="absolute inset-0 border-2 border-dashed border-[#2df5b1]/20 rounded-[2.5rem] animate-[spin_10s_linear_infinite]"></div>
+                        <div class="w-16 h-16 bg-[#2df5b1] rounded-[1.8rem] flex items-center justify-center shadow-[0_0_40px_rgba(45,245,177,0.3)]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#17110e]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-black mb-2 tracking-tighter text-center uppercase">Auth Required</h2>
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-30 text-center mb-10">Input Endpoint Credentials</p>
+                    <div class="space-y-4 relative z-10">
+                        <input v-model="tempKey" type="password" placeholder="HTTPS://STEINHQ.COM/..." class="w-full p-5 text-center text-[10px] font-black tracking-widest outline-none bg-black/60 border border-white/5 rounded-2xl focus:border-[#2df5b1]/40 transition-all duration-300 placeholder:opacity-20">
+                        <button @click="connectVault" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press shadow-[0_10px_20px_rgba(45,245,177,0.2)]">Initialize Link</button>
+                        <button @click="enterGuestMode" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl font-black text-[9px] uppercase tracking-[0.2em] text-white/40 btn-press">View Site Demo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-else class="max-w-6xl mx-auto px-6 pt-10">
+            
+            <div class="flex justify-between items-start mb-6 px-2">
+                <div><p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{{ intelligenceStatus }} <span v-if="isGuestMode" class="text-red-500">(DEMO)</span></p></div>
+                <button @click="logout" class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-red-500 btn-press">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                </button>
+            </div>
+
+            <div v-if="showManual" class="fixed inset-0 z-[500] bg-[#0f0b09]/98 backdrop-blur-3xl p-8 overflow-y-auto">
+                <div class="max-w-md mx-auto">
+                    <div class="flex justify-between items-center mb-10">
+                        <div>
+                            <h2 class="text-2xl font-black uppercase tracking-tighter text-[#2df5b1]">Intelligence Lexicon</h2>
+                            <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">Unified Logic & Workflow v4.2</p>
+                        </div>
+                        <button @click="showManual = false" class="text-3xl opacity-40">&times;</button>
+                    </div>
+
+                    <div class="space-y-8 pb-12">
+                        <section>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-lg bg-[#2df5b1]/10 flex items-center justify-center text-[#2df5b1] font-bold text-xs">01</div>
+                                <h3 class="text-xs font-black uppercase tracking-widest text-[#d4a373]">Interface Glossary</h3>
+                            </div>
+                            <div class="luxury-card p-6 space-y-6">
+                                <div>
+                                    <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Safe Daily Spend</p>
+                                    <p class="text-[11px] opacity-70 leading-relaxed">The "Safe Zone." This is how much you can spend <span class="text-white font-bold">today</span> without eating into your Savings Goal.</p>
+                                </div>
+                                <div class="pt-4 border-t border-white/5">
+                                    <p class="text-[10px] font-black uppercase text-[#2df5b1] mb-1">Burn Rate</p>
+                                    <p class="text-[11px] opacity-70 leading-relaxed">Your consumption velocity. Calculated as <span class="text-white font-bold">Total Spent ÷ Days Elapsed</span>.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <button @click="showManual = false" class="w-full mint-bg p-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] btn-press sticky bottom-0">Resume Operation</button>
+                </div>
+            </div>
+
+            <div class="fab-container">
+                <button v-if="activeTab === 'reminders' && notificationStatus !== 'granted'" @click="requestNotify" class="fab-btn fab-notify btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
+                <button @click="showSettings = true" class="fab-btn fab-settings btn-press"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572-1.724 1.724 0 000-3.35 1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg></button>
+            </div>
+
+            <div v-if="activeTab === 'vault'">
+                <header :class="headerClass" class="header-card p-8 rounded-[3rem] mb-6 shadow-2xl">
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Safe Daily Spend ({{ currentMonthName }})</p>
+                    <h1 class="text-6xl font-black tracking-tighter mb-4">${{ dailyAllowance > 0 ? dailyAllowance : '0.00' }}</h1>
+                    <div class="h-1.5 bg-black/10 rounded-full mb-6 overflow-hidden"><div class="progress-fill" :style="{ width: percentUsed + '%' }"></div></div>
+                    <div class="grid grid-cols-2 gap-4 border-t border-black/10 pt-4">
+                        <div><p class="text-[8px] font-black uppercase opacity-50">Month Total</p><p class="text-sm font-bold">${{ currentMonthTotal.toFixed(0) }}</p></div>
+                        <div class="text-right"><p class="text-[8px] font-black uppercase opacity-50">Days Left</p><p class="text-sm font-bold">{{ daysRemaining }} Days</p></div>
+                    </div>
+                </header>
+
+                <div class="luxury-card p-6 mb-8">
+                    <form @submit.prevent="addExpense" class="space-y-4">
+                        <input v-model="form.desc" placeholder="Entity Name" required class="w-full p-4 text-sm outline-none">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input v-model.number="form.amt" type="number" step="0.01" placeholder="0.00" required class="p-4 text-sm font-bold outline-none">
+                            <select v-model="form.cat" class="p-4 text-[10px] font-black uppercase"><option>Food</option><option>Bills</option><option>Fun</option><option>Other</option></select>
+                        </div>
+                        <button :disabled="loading" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">{{ loading ? 'Syncing...' : 'Commit to Vault' }}</button>
+                    </form>
+                </div>
+
+                <div class="space-y-3">
+                    <div v-for="(item, i) in currentMonthExpenses.slice(0,10)" :key="i" class="luxury-card p-4 flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center text-lg">{{ getIcon(item.Category) }}</div>
+                            <div><p class="font-bold text-sm">{{ item.Description }}</p><p class="text-[9px] text-[#d4a373] font-black uppercase opacity-50">{{ item.Date }}</p></div>
+                        </div>
+                        <p class="font-black mint-glow">-${{ item.Amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'reminders'">
+                <div class="mb-6 px-2"><p class="text-[10px] font-black uppercase opacity-40">Monthly Recurring</p><h2 class="text-4xl font-black tracking-tighter">Alerts</h2></div>
+                <div class="luxury-card p-6 mb-6">
+                    <form @submit.prevent="addBill" class="flex gap-3">
+                        <input v-model="newBill.name" placeholder="New Alert Name..." class="flex-1 p-4 text-sm outline-none">
+                        <button class="mint-bg px-6 rounded-2xl font-black btn-press">+</button>
+                    </form>
+                </div>
+                <div class="space-y-3">
+                    <div v-for="(bill, i) in bills" :key="i" class="luxury-card p-5 flex justify-between items-center transition-all" :class="bill.paid ? 'opacity-30 grayscale' : ''">
+                        <span class="font-bold tracking-tight text-sm" :class="bill.paid ? 'line-through' : ''">{{ bill.name }}</span>
+                        <div class="flex gap-2">
+                            <button @click="toggleBill(i)" :class="bill.paid ? 'bg-[#2df5b1] text-[#17110e]' : 'bg-black/40 text-[#2df5b1]'" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold border border-[#2df5b1]/20 btn-press">✓</button>
+                            <button @click="removeBill(i)" class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-bold btn-press">×</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'reports'">
+                <div class="flex justify-between items-end mb-6 px-2">
+                    <div><p class="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{{ intelligenceStatus }}</p><h2 class="text-4xl font-black tracking-tighter">Intelligence</h2></div>
+                    <button @click="showManual = true" class="w-10 h-10 rounded-xl bg-[#d4a373] text-[#17110e] flex items-center justify-center font-bold btn-press">?</button>
+                </div>
+
+                <div class="luxury-card p-6 mb-4 bg-gradient-to-br from-[#2df5b1]/10 to-transparent border-dashed">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-[8px] font-black uppercase opacity-50 mb-1">Projected End</p>
+                            <h3 class="text-3xl font-black tracking-tighter" :class="projectedTotal > (monthlyLimit - savingsGoal) ? 'text-red-400' : 'text-[#2df5b1]'">
+                                ${{ projectedTotal }}
+                            </h3>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] font-black uppercase opacity-50 mb-1">Burn Rate</p>
+                            <p class="text-sm font-bold text-[#d4a373]">${{ currentBurnRate }}/Day</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="luxury-card p-4 border-l-4 border-[#2df5b1]">
+                        <p class="text-[8px] font-black uppercase opacity-50 mb-1">Vault Health</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-2xl font-black">{{ efficiencyScore }}%</span>
+                            <span class="text-[9px] mb-1 opacity-40">Optimal</span>
+                        </div>
+                    </div>
+                    <div class="luxury-card p-4 border-l-4 border-[#d4a373]">
+                        <p class="text-[8px] font-black uppercase opacity-50 mb-1">Top Strainer</p>
+                        <div class="flex items-end gap-2">
+                            <span class="text-xl font-black uppercase tracking-tighter">{{ topStrainer }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="luxury-card p-5 mb-8">
+                    <div class="flex justify-between items-center mb-3">
+                        <p class="text-[9px] font-black uppercase tracking-widest">Savings Integrity</p>
+                        <span class="mint-glow font-bold text-xs">{{ savingsIntegrity }}%</span>
+                    </div>
+                    <div class="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                        <div class="progress-fill mint-bg" :style="{ width: savingsIntegrity + '%' }"></div>
+                    </div>
+                </div>
+                
+                <div class="luxury-card p-6 mb-6 border-t-2 border-[#2df5b1]/30">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-[#2df5b1]/10 flex items-center justify-center text-[#2df5b1] shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mb-1">Executive Briefing</p>
+                            <p class="text-xs leading-relaxed font-bold text-white/90">
+                                {{ smartSummary }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="luxury-card p-8">
+                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-4 text-center">Category Distribution</p>
+                        <div class="relative h-64">
+                            <canvas id="reportChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="luxury-card p-8">
+                        <p class="text-[9px] font-black uppercase tracking-widest opacity-40 mb-4 text-center">Spending Velocity (Daily)</p>
+                        <div class="relative h-64">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="luxury-card p-6 mb-6">
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <input v-model="intelSearch" type="text" placeholder="ENTITY..." class="p-4 text-[10px] font-black uppercase outline-none bg-black/40 border border-white/5 rounded-2xl">
+                        <select v-model="monthFilter" class="p-4 text-[10px] font-black uppercase">
+                            <option value="All">Lifetime</option>
+                            <option v-for="m in months" :value="m">{{ m.toUpperCase() }}</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-white/5">
+                        <button v-for="cat in ['All', 'Food', 'Bills', 'Fun', 'Other']" 
+                                @click="activeFilter = cat" 
+                                :class="['filter-chip', activeFilter === cat ? 'filter-active' : 'text-white/30']">
+                            {{ cat }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-3 mb-12">
+                    <div v-for="(item, i) in processedIntel" :key="i" class="luxury-card p-4 flex justify-between items-center opacity-80">
+                        <div class="flex items-center gap-4">
+                            <div class="text-xs">{{ getIcon(item.Category) }}</div>
+                            <div><p class="font-bold text-xs">{{ item.Description }}</p><p class="text-[8px] opacity-40 uppercase">{{ item.Date }}</p></div>
+                        </div>
+                        <p class="text-xs font-black">-${{ item.Amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="showSettings" class="fixed inset-0 z-[300] bg-[#0f0b09]/95 backdrop-blur-xl flex items-center justify-center px-6">
+                <div class="luxury-card p-8 w-full max-w-sm border-2 border-[#d4a373]">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-black uppercase tracking-tighter text-[#d4a373]">Calibration</h2>
+                        <button @click="showSettings = false" class="text-2xl opacity-40">&times;</button>
+                    </div>
+                    <div class="space-y-4">
+                        <label class="text-[9px] font-black uppercase opacity-40 ml-2">Total Budget Limit</label>
+                        <input v-model.number="monthlyLimit" type="number" class="w-full p-4 outline-none">
+                        <label class="text-[9px] font-black uppercase opacity-40 ml-2">Monthly Savings Goal</label>
+                        <input v-model.number="savingsGoal" type="number" class="w-full p-4 outline-none">
+                        <button @click="saveBudget" class="w-full mint-bg p-4 rounded-xl font-black text-[11px] uppercase tracking-widest btn-press">Apply Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="fixed bottom-0 left-0 right-0 glass-nav px-8 py-6 flex justify-around items-center z-50">
+                <button @click="activeTab = 'vault'" :class="activeTab === 'vault' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg><span class="text-[7px] font-black uppercase">Vault</span></button>
+                <button @click="activeTab = 'reminders'" :class="activeTab === 'reminders' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span class="text-[7px] font-black uppercase">Alerts</span></button>
+                <button @click="openReports" :class="activeTab === 'reports' ? 'text-[#2df5b1]' : 'text-white/30'" class="flex flex-col items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg><span class="text-[7px] font-black uppercase">Intel</span></button>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    vaultKey: localStorage.getItem('vault_api_key') || '',
+                    tempKey: '', loginError: false, loading: false, activeTab: 'vault',
+                    intelSearch: '', activeFilter: 'All', monthFilter: 'All',
+                    showSettings: false, showManual: false, isGuestMode: false,
+                    expenses: [], 
+                    form: { desc: '', amt: '', cat: 'Food' },
+                    newBill: { name: '' },
+                    bills: JSON.parse(localStorage.getItem('user_bills') || '[]'),
+                    monthlyLimit: parseFloat(localStorage.getItem('user_budget')) || 5000,
+                    savingsGoal: parseFloat(localStorage.getItem('user_savings')) || 500,
+                    notificationStatus: Notification.permission,
+                    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                }
+            },
+            computed: {
+                intelligenceStatus() {
+                    if (this.currentMonthExpenses.length === 0) return "Vault System: Idle // Awaiting Input";
+                    if (this.efficiencyScore > 80) return "Analysis: Optimal // High Efficiency";
+                    if (this.efficiencyScore > 50) return "Analysis: Nominal // Monitor Burn Rate";
+                    return "Analysis: CRITICAL // Budget Breach Imminent";
+                },
+                currentMonthName() { return new Date().toLocaleDateString('en-US', { month: 'short' }); },
+                currentDay() { return new Date().getDate(); },
+                daysInMonth() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); },
+                daysRemaining() { return this.daysInMonth - this.currentDay + 1; },
+                currentMonthExpenses() { return this.expenses.filter(e => e.Date && e.Date.includes(this.currentMonthName)).reverse(); },
+                currentMonthTotal() { return this.currentMonthExpenses.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0); },
+                percentUsed() { 
+                    const limit = this.monthlyLimit - this.savingsGoal;
+                    return limit > 0 ? Math.min(100, Math.round((this.currentMonthTotal / limit) * 100)) : 100;
+                },
+                dailyAllowance() { return ((this.monthlyLimit - this.savingsGoal - this.currentMonthTotal) / this.daysRemaining).toFixed(2); },
+                headerClass() { return this.dailyAllowance < 0 ? 'header-warning' : ''; },
+                currentBurnRate() { return (this.currentMonthTotal / this.currentDay).toFixed(2); },
+                projectedTotal() { return (this.currentBurnRate * this.daysInMonth).toFixed(0); },
+                processedIntel() { 
+                    return this.expenses.filter(item => {
+                        const matchSearch = item.Description.toLowerCase().includes(this.intelSearch.toLowerCase());
+                        const matchCat = this.activeFilter === 'All' || item.Category === this.activeFilter;
+                        const matchMonth = this.monthFilter === 'All' || (item.Date && item.Date.includes(this.monthFilter));
+                        return matchSearch && matchCat && matchMonth;
+                    }).reverse(); 
+                },
+                savingsIntegrity() {
+                    if (this.savingsGoal <= 0) return 100;
+                    const remaining = this.monthlyLimit - this.currentMonthTotal;
+                    const health = (remaining / this.savingsGoal) * 100;
+                    return Math.max(0, Math.min(100, Math.round(health)));
+                },
+                topStrainer() {
+                    if (this.currentMonthExpenses.length === 0) return 'Stable';
+                    const cats = {};
+                    this.currentMonthExpenses.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                    return Object.keys(cats).reduce((a, b) => cats[a] > cats[b] ? a : b);
+                },
+                efficiencyScore() {
+                    if (this.monthlyLimit <= 0) return 0;
+                    const score = 100 - ((this.projectedTotal / this.monthlyLimit) * 100);
+                    return Math.max(0, Math.min(100, Math.round(score)));
+                },
+                previousMonthName() {
+                    const d = new Date();
+                    d.setMonth(d.getMonth() - 1);
+                    return d.toLocaleDateString('en-US', { month: 'short' });
+                },
+                lastMonthTotal() {
+                    const prev = this.expenses.filter(e => e.Date && e.Date.includes(this.previousMonthName));
+                    return prev.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0);
+                },
+                monthlyDelta() {
+                    if (this.lastMonthTotal <= 0) return 0;
+                    const diff = ((this.currentMonthTotal - this.lastMonthTotal) / this.lastMonthTotal) * 100;
+                    return diff.toFixed(1);
+                },
+                smartSummary() {
+                    const data = this.processedIntel;
+                    const total = data.reduce((acc, i) => acc + parseFloat(i.Amount || 0), 0);
+                    const count = data.length;
+                    
+                    // Default message if no data
+                    if (count === 0) return "Vault status: No entities detected within this filter range. System standing by.";
+
+                    // Logic for dynamic text
+                    let timeText = this.monthFilter === 'All' ? "across your entire history" : `during ${this.monthFilter}`;
+                    let catText = this.activeFilter === 'All' ? "all categories" : `the ${this.activeFilter} sector`;
+                    
+                    // Find the single biggest purchase in the current view
+                    const biggest = [...data].sort((a, b) => b.Amount - a.Amount)[0];
+                    
+                    // Constructing the "Smart" sentence
+                    let brief = `Analysis of ${catText} ${timeText} shows ${count} transactions totaling $${total.toFixed(2)}. `;
+                    
+                    if (count > 0) {
+                        brief += `Your most significant strain originated from "${biggest.Description}" at $${biggest.Amount}. `;
+                    }
+
+                    if (this.activeFilter === 'All' && total > (this.monthlyLimit * 0.5)) {
+                        brief += "Warning: High volume detected. Recommend tightening fun-sector output.";
+                    } else {
+                        brief += "Efficiency remains within nominal parameters.";
+                    }
+
+                    return brief;
+                }
+            },
+            methods: {
+                enterGuestMode() {
+                    this.vaultKey = 'GUEST_MODE';
+                    this.isGuestMode = true;
+                    this.expenses = [
+                        { Date: `${this.currentMonthName} 01`, Description: "Demo: Food", Category: "Food", Amount: 20 },
+                        { Date: `${this.currentMonthName} 05`, Description: "Demo: Coffee", Category: "Food", Amount: 5 }
+                    ];
+                },
+                requestNotify() { Notification.requestPermission().then(perm => { this.notificationStatus = perm; }); },
+                connectVault() {
+                    if (this.tempKey.includes('steinhq.com')) {
+                        localStorage.setItem('vault_api_key', this.tempKey.trim());
+                        location.reload();
+                    } else { this.loginError = true; setTimeout(() => this.loginError = false, 500); }
+                },
+                logout() { localStorage.clear(); location.reload(); },
+                saveBudget() { 
+                    localStorage.setItem('user_budget', this.monthlyLimit); 
+                    localStorage.setItem('user_savings', this.savingsGoal); 
+                    this.showSettings = false; 
+                },
+                addBill() { 
+                    if (this.isGuestMode) { alert("DEMO: Alerts are local-only."); }
+                    if (this.newBill.name) { 
+                        this.bills.push({name: this.newBill.name, paid: false}); 
+                        this.persistBills(); 
+                        this.newBill.name = ''; 
+                    } 
+                },
+                toggleBill(i) { this.bills[i].paid = !this.bills[i].paid; this.persistBills(); },
+                removeBill(i) { this.bills.splice(i, 1); this.persistBills(); },
+                persistBills() { localStorage.setItem('user_bills', JSON.stringify(this.bills)); },
+                getIcon(c) { return { 'Food': '🍵', 'Bills': '📜', 'Fun': '✨' }[c] || '💳'; },
+                openReports() { 
+                    this.activeTab = 'reports'; 
+                    this.$nextTick(() => { this.renderCharts(); }); 
+                },
+                renderCharts() {
+                    // 1. DOUGHNUT CHART (Category Spread)
+                    const ctx1 = document.getElementById('reportChart');
+                    if (ctx1) {
+                        const cats = {};
+                        this.processedIntel.forEach(i => cats[i.Category] = (cats[i.Category] || 0) + parseFloat(i.Amount));
+                        
+                        if (this.chartInstance1) this.chartInstance1.destroy();
+                        this.chartInstance1 = new Chart(ctx1, {
+                            type: 'doughnut',
+                            data: {
+                                labels: Object.keys(cats),
+                                datasets: [{
+                                    data: Object.values(cats),
+                                    backgroundColor: ['#2df5b1', '#d4a373', '#8c6c53', '#3d1c1c'],
+                                    borderWidth: 0,
+                                    hoverOffset: 20,
+                                    chartInstance1: null,
+                                    chartInstance2: null
+                                }]
+                            },
+                            options: { cutout: '85%', plugins: { legend: { display: false } }, maintainAspectRatio: false }
+                        });
+                    }
+
+                    // 2. LINE CHART (Spending Velocity - Full Month View)
+                    const ctx2 = document.getElementById('trendChart');
+                    if (ctx2) {
+                        // 1. Create an array for every day of the current month (1 to 30/31)
+                        const daysArr = Array.from({ length: this.daysInMonth }, (_, i) => i + 1);
+                        
+                        // 2. Initialize every day with 0
+                        const dailyData = {};
+                        daysArr.forEach(d => dailyData[d] = 0);
+
+                        // 3. Fill in the actual spending from your expenses
+                        this.currentMonthExpenses.forEach(e => {
+                            // This regex extracts the number from "Mar 05" or "05-Mar"
+                            const dayMatch = e.Date.match(/(\d+)/);
+                            if (dayMatch) {
+                                const dayNum = parseInt(dayMatch[0]);
+                                if (dailyData[dayNum] !== undefined) {
+                                    dailyData[dayNum] += parseFloat(e.Amount || 0);
+                                }
+                            }
+                        });
+
+                        if (this.chartInstance2) this.chartInstance2.destroy();
+                        this.chartInstance2 = new Chart(ctx2, {
+                            type: 'line',
+                            data: {
+                                labels: daysArr.map(d => `${d}`), // Days 1 to 31
+                                datasets: [{
+                                    label: 'Daily Spend',
+                                    data: daysArr.map(d => dailyData[d]),
+                                    borderColor: '#2df5b1',
+                                    backgroundColor: 'rgba(45, 245, 177, 0.05)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: (context) => dailyData[context.dataIndex + 1] > 0 ? 3 : 0, // Only show dots on days you spent money
+                                    pointBackgroundColor: '#2df5b1',
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                maintainAspectRatio: false,
+                                plugins: { 
+                                    legend: { display: false },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: (context) => ` $${context.raw.toFixed(2)}`
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: { 
+                                        beginAtZero: true,
+                                        grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+                                        ticks: { color: 'rgba(255,255,255,0.9)', font: { size: 8 }, callback: (value) => '$' + value }
+                                    },
+                                    x: { 
+                                        grid: { display: false },
+                                        ticks: { 
+                                            color: 'rgba(255,255,255,0.2)', 
+                                            font: { size: 8 },
+                                            maxRotation: 0,
+                                            autoSkip: true,
+                                            maxTicksLimit: 10 // Only show every few days so it's not crowded
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                },
+                async loadData() {
+                    if (!this.vaultKey || this.isGuestMode) return;
+                    this.loading = true;
+                    try {
+                        const res = await fetch(`${this.vaultKey}?_t=${Date.now()}`);
+                        const data = await res.json();
+                        this.expenses = Array.isArray(data) ? data.filter(i => i.Description) : [];
+                    } catch(e) { console.error("Sync Failed"); } finally { this.loading = false; }
+                },
+                async addExpense() {
+                    if (this.isGuestMode) {
+                        alert("ACCESS DENIED: Read-only Demo.\n\nSetup instructions:\nhttps://github.com/Scorpiozo/My-Expense-Tracker");
+                        this.form.desc = ''; this.form.amt = ''; return;
+                    }
+                    this.loading = true;
+                    
+                    const row = { 
+                        Date: new Date().toLocaleString('en-US', { 
+                            weekday: 'short', 
+                            hour: 'numeric', 
+                            minute: '2-digit', 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        }).replace(/,/g, ''), 
+                        Description: this.form.desc, 
+                        Amount: Number(this.form.amt), 
+                        Category: this.form.cat 
+                    };
+
+                    try {
+                        await fetch(this.vaultKey, { 
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify([row]) 
+                        });
+                        this.form.desc = ''; this.form.amt = '';
+                        setTimeout(() => this.loadData(), 1000);
+                    } catch(e) { this.loading = false; }
+                }
+            },
+            mounted() { this.loadData(); }
+        }).mount('#app');
+    </script>
+</body>
+</html>
